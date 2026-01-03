@@ -1,0 +1,103 @@
+// This is your Prisma schema file for MongoDB
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  LAB_ADMIN
+  USER
+}
+
+enum ItemStatus {
+  AVAILABLE
+  ISSUED
+  MAINTENANCE
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  labId     String?  @map("lab_id") @db.ObjectId
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  lab         Lab?          @relation("LabUsers", fields: [labId], references: [id])
+  managedLabs Lab[]         @relation("LabAdmin")
+  issueRecords IssueRecord[]
+
+  @@index([labId])
+  @@map("users")
+}
+
+model Lab {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  department String
+  empId      String   @map("emp_id") @db.ObjectId // Admin's user ID
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  admin        User         @relation("LabAdmin", fields: [empId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users        User[]       @relation("LabUsers")
+  items        Item[]
+  issueRecords IssueRecord[]
+
+  @@index([empId])
+  @@map("labs")
+}
+
+model Item {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  category    String
+  status      ItemStatus @default(AVAILABLE)
+  labId       String     @map("lab_id") @db.ObjectId
+  description String?
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  // Relations
+  lab          Lab           @relation(fields: [labId], references: [id])
+  issueRecords IssueRecord[]
+
+  @@index([labId])
+  @@index([status])
+  @@map("items")
+}
+
+model IssueRecord {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String    @map("user_id") @db.ObjectId
+  itemId            String    @map("item_id") @db.ObjectId
+  labId             String    @map("lab_id") @db.ObjectId
+  issueTime         DateTime  @default(now()) @map("issue_time")
+  estimatedReturnTime DateTime? @map("estimated_return_time")
+  returnTime        DateTime? @map("return_time")
+  notificationSent  Boolean   @default(false) @map("notification_sent")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  item Item @relation(fields: [itemId], references: [id])
+  lab  Lab  @relation(fields: [labId], references: [id])
+
+  @@index([userId])
+  @@index([itemId])
+  @@index([labId])
+  @@index([estimatedReturnTime])
+  @@map("issue_records")
+}
+

@@ -1,0 +1,1037 @@
+<!DOCTYPE html><html><head>
+      <title>DIAGRAMS</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\LENOVO\.cursor\extensions\shd101wyy.markdown-preview-enhanced-0.8.20-universal\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      <script type="text/javascript" src="file:///c:\Users\LENOVO\.cursor\extensions\shd101wyy.markdown-preview-enhanced-0.8.20-universal\crossnote\dependencies\mermaid\mermaid.min.js" charset="UTF-8"></script>
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script></head><body for="html-export">
+    
+    
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="laboratory-items-issue-management-system---updated-diagrams">Laboratory Items Issue Management System - Updated Diagrams </h1>
+<h2 id="1-system-architecture-diagram">1. System Architecture Diagram </h2>
+<div class="mermaid">graph TB
+    subgraph "Client Layer"
+        WEB[Web Browser]
+        REACT[React Frontend&lt;br/&gt;Tailwind CSS]
+    end
+    
+    subgraph "Application Layer"
+        EXPRESS[Express.js Server&lt;br/&gt;REST API]
+        AUTH[JWT Authentication&lt;br/&gt;Role-Based Access Control]
+    end
+    
+    subgraph "Business Logic Layer"
+        SA[Super Admin Routes]
+        AD[Admin Routes]
+        LA[Lab Admin Routes]
+        UR[User Routes]
+        AUTH_R[Auth Routes]
+        EMAIL_SVC[Email Service&lt;br/&gt;Nodemailer]
+        OVERDUE_SVC[Overdue Checker Service&lt;br/&gt;Cron Job]
+    end
+    
+    subgraph "Data Layer"
+        PRISMA[Prisma ORM]
+        MONGO[(MongoDB Database)]
+        MONGOOSE[Mongoose&lt;br/&gt;Direct Operations]
+    end
+    
+    subgraph "Database Collections"
+        USERS[(Users)]
+        LABS[(Labs)]
+        ITEMS[(Items)]
+        RECORDS[(Issue Records&lt;br/&gt;with estimated_return_time&lt;br/&gt;and notification_sent)]
+    end
+    
+    subgraph "External Services"
+        SMTP[SMTP Server&lt;br/&gt;Gmail/Email Provider]
+    end
+    
+    WEB --&gt; REACT
+    REACT --&gt; EXPRESS
+    EXPRESS --&gt; AUTH
+    AUTH --&gt; SA
+    AUTH --&gt; AD
+    AUTH --&gt; LA
+    AUTH --&gt; UR
+    AUTH --&gt; AUTH_R
+    
+    SA --&gt; PRISMA
+    AD --&gt; PRISMA
+    LA --&gt; PRISMA
+    UR --&gt; PRISMA
+    AUTH_R --&gt; PRISMA
+    
+    SA --&gt; MONGOOSE
+    AD --&gt; MONGOOSE
+    LA --&gt; MONGOOSE
+    
+    OVERDUE_SVC --&gt; PRISMA
+    OVERDUE_SVC --&gt; MONGOOSE
+    OVERDUE_SVC --&gt; EMAIL_SVC
+    EMAIL_SVC --&gt; SMTP
+    
+    PRISMA --&gt; MONGO
+    MONGOOSE --&gt; MONGO
+    
+    MONGO --&gt; USERS
+    MONGO --&gt; LABS
+    MONGO --&gt; ITEMS
+    MONGO --&gt; RECORDS
+</div><h2 id="2-user-flow-diagrams">2. User Flow Diagrams </h2>
+<h3 id="21-super-admin-flow">2.1 Super Admin Flow </h3>
+<div class="mermaid">flowchart TD
+    START([Super Admin Login]) --&gt; DASH[Super Admin Dashboard]
+    DASH --&gt; CREATE_ADMIN[Create Admin]
+    DASH --&gt; CREATE_LAB[Create Lab]
+    DASH --&gt; ASSIGN[Assign Admin to Lab]
+    DASH --&gt; VIEW_ADMINS[View All Admins]
+    DASH --&gt; VIEW_LABS[View All Labs]
+    
+    CREATE_ADMIN --&gt; FORM1[Fill Admin Details]
+    FORM1 --&gt; SUBMIT1[Submit]
+    SUBMIT1 --&gt; SUCCESS1[Admin Created]
+    SUCCESS1 --&gt; DASH
+    
+    CREATE_LAB --&gt; FORM2[Fill Lab Details&lt;br/&gt;Select Admin]
+    FORM2 --&gt; SUBMIT2[Submit]
+    SUBMIT2 --&gt; SUCCESS2[Lab Created]
+    SUCCESS2 --&gt; DASH
+    
+    ASSIGN --&gt; SELECT_LAB[Select Lab]
+    SELECT_LAB --&gt; SELECT_ADMIN[Select Admin]
+    SELECT_ADMIN --&gt; SUBMIT3[Submit]
+    SUBMIT3 --&gt; SUCCESS3[Admin Assigned]
+    SUCCESS3 --&gt; DASH
+    
+    VIEW_ADMINS --&gt; EDIT_ADMIN[Edit Admin]
+    VIEW_ADMINS --&gt; DELETE_ADMIN[Delete Admin]
+    EDIT_ADMIN --&gt; FORM_EDIT_ADMIN[Update Admin Details&lt;br/&gt;Name, Email, Password]
+    FORM_EDIT_ADMIN --&gt; SUBMIT_EDIT_ADMIN[Submit]
+    SUBMIT_EDIT_ADMIN --&gt; SUCCESS_EDIT_ADMIN[Admin Updated]
+    SUCCESS_EDIT_ADMIN --&gt; DASH
+    
+    DELETE_ADMIN --&gt; CONFIRM_DELETE_ADMIN[Confirm Deletion]
+    CONFIRM_DELETE_ADMIN --&gt; CHECK_ADMIN_LABS{Admin Assigned&lt;br/&gt;to Labs?}
+    CHECK_ADMIN_LABS --&gt;|Yes| ERROR_ADMIN[Error: Cannot Delete&lt;br/&gt;Reassign Labs First]
+    CHECK_ADMIN_LABS --&gt;|No| SUCCESS_DELETE_ADMIN[Admin Deleted]
+    ERROR_ADMIN --&gt; DASH
+    SUCCESS_DELETE_ADMIN --&gt; DASH
+    
+    VIEW_LABS --&gt; EDIT_LAB[Edit Lab]
+    VIEW_LABS --&gt; DELETE_LAB[Delete Lab]
+    EDIT_LAB --&gt; FORM_EDIT_LAB[Update Lab Details&lt;br/&gt;Name, Department, Admin]
+    FORM_EDIT_LAB --&gt; SUBMIT_EDIT_LAB[Submit]
+    SUBMIT_EDIT_LAB --&gt; SUCCESS_EDIT_LAB[Lab Updated]
+    SUCCESS_EDIT_LAB --&gt; DASH
+    
+    DELETE_LAB --&gt; CONFIRM_DELETE_LAB[Confirm Deletion]
+    CONFIRM_DELETE_LAB --&gt; CHECK_LAB_DATA{Lab Has Items&lt;br/&gt;Users, or Records?}
+    CHECK_LAB_DATA --&gt;|Yes| ERROR_LAB[Error: Cannot Delete&lt;br/&gt;Remove Related Data First]
+    CHECK_LAB_DATA --&gt;|No| SUCCESS_DELETE_LAB[Lab Deleted]
+    ERROR_LAB --&gt; DASH
+    SUCCESS_DELETE_LAB --&gt; DASH
+</div><h3 id="22-admin-flow">2.2 Admin Flow </h3>
+<div class="mermaid">flowchart TD
+    START([Admin Login]) --&gt; DASH[Admin Dashboard]
+    DASH --&gt; VIEW_LABS[View My Labs]
+    DASH --&gt; CREATE_LA[Create Lab Admin]
+    DASH --&gt; REPORTS[View Lab Reports]
+    
+    VIEW_LABS --&gt; LAB_LIST[Display Labs&lt;br/&gt;with Stats]
+    
+    CREATE_LA --&gt; SELECT_LAB[Select Lab]
+    SELECT_LAB --&gt; FORM[Fill Lab Admin Details]
+    FORM --&gt; SUBMIT[Submit]
+    SUBMIT --&gt; SUCCESS[Lab Admin Created]
+    SUCCESS --&gt; DASH
+    
+    REPORTS --&gt; SELECT_LAB2[Select Lab]
+    SELECT_LAB2 --&gt; REPORT_DATA[View Statistics&lt;br/&gt;Items, Users, Issues]
+</div><h3 id="23-lab-admin-flow">2.3 Lab Admin Flow </h3>
+<div class="mermaid">flowchart TD
+    START([Lab Admin Login]) --&gt; DASH[Lab Admin Dashboard]
+    DASH --&gt; MANAGE_ITEMS[Manage Items]
+    DASH --&gt; CREATE_USER[Create User]
+    DASH --&gt; ISSUE[Issue Items]
+    DASH --&gt; HISTORY[Issue History]
+    
+    MANAGE_ITEMS --&gt; ADD_ITEM[Add Item]
+    MANAGE_ITEMS --&gt; EDIT_ITEM[Edit Item]
+    MANAGE_ITEMS --&gt; DELETE_ITEM[Delete Item]
+    
+    CREATE_USER --&gt; USER_FORM[Fill User Details]
+    USER_FORM --&gt; SUBMIT_USER[Submit]
+    SUBMIT_USER --&gt; SUCCESS_USER[User Created]
+    SUCCESS_USER --&gt; DASH
+    
+    ISSUE --&gt; SELECT_ITEM[Select Item]
+    SELECT_ITEM --&gt; SELECT_USER[Select User from Dropdown]
+    SELECT_USER --&gt; SET_EST_RETURN[Set Estimated Return Time]
+    SET_EST_RETURN --&gt; SUBMIT_ISSUE[Issue Item]
+    SUBMIT_ISSUE --&gt; SUCCESS_ISSUE[Item Issued&lt;br/&gt;Record Created with&lt;br/&gt;estimated_return_time]
+    SUCCESS_ISSUE --&gt; DASH
+    
+    HISTORY --&gt; VIEW_RECORDS[View All Records&lt;br/&gt;with Overdue Indicators]
+    VIEW_RECORDS --&gt; RETURN[Mark as Returned]
+    RETURN --&gt; UPDATE_STATUS[Update Item Status]
+</div><h3 id="24-user-flow">2.4 User Flow </h3>
+<div class="mermaid">flowchart TD
+    START([User Login]) --&gt; DASH[User Dashboard]
+    DASH --&gt; VIEW_ITEMS[View Available Items]
+    DASH --&gt; MY_ISSUED[My Issued Items]
+    
+    VIEW_ITEMS --&gt; REQUEST[Request Item Issue]
+    REQUEST --&gt; NOTIFY[Notify Lab Admin]
+    
+    MY_ISSUED --&gt; ACTIVE[Active Issues&lt;br/&gt;Shows Estimated Return Time&lt;br/&gt;Highlights Overdue Items]
+    MY_ISSUED --&gt; RETURNED[Returned Items]
+    
+    ACTIVE --&gt; CHECK_OVERDUE{Item Overdue?}
+    CHECK_OVERDUE --&gt;|Yes| SHOW_OVERDUE[Display Overdue Warning&lt;br/&gt;Red Highlight]
+    CHECK_OVERDUE --&gt;|No| SHOW_NORMAL[Display Normal Status]
+    
+    SHOW_OVERDUE --&gt; RETURN_ITEM[Return Item]
+    SHOW_NORMAL --&gt; RETURN_ITEM
+    RETURN_ITEM --&gt; CONFIRM[Confirm Return]
+    CONFIRM --&gt; UPDATE[Update Status]
+    UPDATE --&gt; SUCCESS[Item Returned]
+    SUCCESS --&gt; DASH
+</div><h2 id="3-entity-relationship-diagram-erd---updated">3. Entity Relationship Diagram (ERD) - Updated </h2>
+<div class="mermaid">erDiagram
+    USER ||--o{ LAB : "manages_as_admin"
+    USER ||--o{ LAB : "belongs_to"
+    USER ||--o{ ISSUE_RECORD : "has"
+    
+    LAB ||--o{ USER : "has_users"
+    LAB ||--o{ ITEM : "contains"
+    LAB ||--o{ ISSUE_RECORD : "tracks"
+    
+    ITEM ||--o{ ISSUE_RECORD : "issued_in"
+    ITEM }o--|| LAB : "belongs_to"
+    
+    ISSUE_RECORD }o--|| USER : "issued_to"
+    ISSUE_RECORD }o--|| ITEM : "for_item"
+    ISSUE_RECORD }o--|| LAB : "in_lab"
+    
+    USER {
+        string id PK
+        string name
+        string email UK
+        string password
+        enum role "SUPER_ADMIN, ADMIN, LAB_ADMIN, USER"
+        string lab_id FK "nullable"
+        datetime created_at
+        datetime updated_at
+    }
+    
+    LAB {
+        string id PK
+        string name
+        string department
+        string emp_id FK "Admin user ID"
+        datetime created_at
+        datetime updated_at
+    }
+    
+    ITEM {
+        string id PK
+        string name
+        string category
+        enum status "AVAILABLE, ISSUED, MAINTENANCE"
+        string lab_id FK
+        string description "nullable"
+        datetime created_at
+        datetime updated_at
+    }
+    
+    ISSUE_RECORD {
+        string id PK
+        string user_id FK
+        string item_id FK
+        string lab_id FK
+        datetime issue_time
+        datetime estimated_return_time "nullable - NEW"
+        datetime return_time "nullable"
+        boolean notification_sent "default false - NEW"
+        datetime created_at
+        datetime updated_at
+    }
+</div><h2 id="4-database-schema-details---updated">4. Database Schema Details - Updated </h2>
+<h3 id="user-entity">User Entity </h3>
+<ul>
+<li><strong>id</strong>: Primary Key (ObjectId)</li>
+<li><strong>name</strong>: String</li>
+<li><strong>email</strong>: String (Unique)</li>
+<li><strong>password</strong>: String (Hashed with bcrypt)</li>
+<li><strong>role</strong>: Enum (SUPER_ADMIN, ADMIN, LAB_ADMIN, USER)</li>
+<li><strong>lab_id</strong>: Foreign Key to Lab (Optional - for LAB_ADMIN and USER)</li>
+<li><strong>created_at</strong>: DateTime</li>
+<li><strong>updated_at</strong>: DateTime</li>
+</ul>
+<h3 id="lab-entity">Lab Entity </h3>
+<ul>
+<li><strong>id</strong>: Primary Key (ObjectId)</li>
+<li><strong>name</strong>: String</li>
+<li><strong>department</strong>: String</li>
+<li><strong>emp_id</strong>: Foreign Key to User (Admin who manages this lab)</li>
+<li><strong>created_at</strong>: DateTime</li>
+<li><strong>updated_at</strong>: DateTime</li>
+</ul>
+<h3 id="item-entity">Item Entity </h3>
+<ul>
+<li><strong>id</strong>: Primary Key (ObjectId)</li>
+<li><strong>name</strong>: String</li>
+<li><strong>category</strong>: String</li>
+<li><strong>status</strong>: Enum (AVAILABLE, ISSUED, MAINTENANCE)</li>
+<li><strong>lab_id</strong>: Foreign Key to Lab</li>
+<li><strong>description</strong>: String (Optional)</li>
+<li><strong>created_at</strong>: DateTime</li>
+<li><strong>updated_at</strong>: DateTime</li>
+</ul>
+<h3 id="issuerecord-entity---updated">IssueRecord Entity - Updated </h3>
+<ul>
+<li><strong>id</strong>: Primary Key (ObjectId)</li>
+<li><strong>user_id</strong>: Foreign Key to User</li>
+<li><strong>item_id</strong>: Foreign Key to Item</li>
+<li><strong>lab_id</strong>: Foreign Key to Lab</li>
+<li><strong>issue_time</strong>: DateTime</li>
+<li><strong>estimated_return_time</strong>: DateTime (Optional) - <strong>NEW FIELD</strong></li>
+<li><strong>return_time</strong>: DateTime (Optional)</li>
+<li><strong>notification_sent</strong>: Boolean (Default: false) - <strong>NEW FIELD</strong></li>
+<li><strong>created_at</strong>: DateTime</li>
+<li><strong>updated_at</strong>: DateTime</li>
+</ul>
+<h2 id="5-role-based-access-control-matrix---updated">5. Role-Based Access Control Matrix - Updated </h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Super Admin</th>
+<th>Admin</th>
+<th>Lab Admin</th>
+<th>User</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Create Admin</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Edit Admin</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Delete Admin</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Create Lab</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Edit Lab</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Delete Lab</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Assign Admin to Lab</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View All Admins</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View All Labs</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View My Labs</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Create Lab Admin</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View Lab Reports</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Manage Items</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Create User</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Issue Items (with Estimated Return Time)</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View Issue History</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View Available Items</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Request Item Issue</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>View My Issued Items (with Overdue Status)</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Return Item</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Receive Overdue Email Notifications</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Receive Overdue Alert Emails</td>
+<td>❌</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-api-endpoints-flow---updated">6. API Endpoints Flow - Updated </h2>
+<div class="mermaid">graph LR
+    subgraph "Authentication"
+        LOGIN[POST /api/auth/login]
+        ME[GET /api/auth/me]
+    end
+    
+    subgraph "Super Admin"
+        SA1[POST /api/super-admin/create-admin]
+        SA2[POST /api/super-admin/create-lab]
+        SA3[PUT /api/super-admin/assign-admin/:labId]
+        SA4[GET /api/super-admin/admins]
+        SA5[GET /api/super-admin/labs]
+        SA6[PUT /api/super-admin/edit-admin/:adminId]
+        SA7[DELETE /api/super-admin/delete-admin/:adminId]
+        SA8[PUT /api/super-admin/edit-lab/:labId]
+        SA9[DELETE /api/super-admin/delete-lab/:labId]
+    end
+    
+    subgraph "Admin"
+        AD1[GET /api/admin/labs]
+        AD2[POST /api/admin/create-lab-admin]
+        AD3[GET /api/admin/reports/:labId]
+    end
+    
+    subgraph "Lab Admin"
+        LA1[GET /api/lab-admin/items]
+        LA2[POST /api/lab-admin/items]
+        LA3[PUT /api/lab-admin/items/:itemId]
+        LA4[DELETE /api/lab-admin/items/:itemId]
+        LA5[GET /api/lab-admin/users]
+        LA6[POST /api/lab-admin/create-user]
+        LA7[POST /api/lab-admin/issue&lt;br/&gt;with estimatedReturnTime]
+        LA8[POST /api/lab-admin/return/:issueRecordId]
+        LA9[GET /api/lab-admin/issue-history]
+        LA10[GET /api/lab-admin/stats]
+    end
+    
+    subgraph "User"
+        U1[GET /api/user/items]
+        U2[POST /api/user/request-issue/:itemId]
+        U3[GET /api/user/issued-items]
+        U4[POST /api/user/return/:issueRecordId]
+        U5[GET /api/user/stats]
+    end
+    
+    subgraph "System Services"
+        OVERDUE_CHECK[POST /api/admin/check-overdue&lt;br/&gt;Manual Trigger]
+        TEST_EMAIL[POST /api/admin/test-email&lt;br/&gt;Test Email Service]
+    end
+</div><h2 id="7-email-notification-system-flow">7. Email Notification System Flow </h2>
+<div class="mermaid">sequenceDiagram
+    participant CRON as Cron Job&lt;br/&gt;(Every Hour)
+    participant OC as Overdue Checker Service
+    participant DB as MongoDB Database
+    participant ES as Email Service
+    participant SMTP as SMTP Server
+    participant USER as User Email
+    participant ADMIN as Lab Admin Email
+    
+    CRON-&gt;&gt;OC: Trigger Check (Hourly)
+    OC-&gt;&gt;DB: Query Overdue Items&lt;br/&gt;(estimated_return_time &lt; now&lt;br/&gt;AND return_time = null&lt;br/&gt;AND notification_sent = false)
+    DB--&gt;&gt;OC: Return Overdue Records
+    
+    loop For Each Overdue Record
+        OC-&gt;&gt;DB: Fetch User Details
+        OC-&gt;&gt;DB: Fetch Lab Admin Details
+        OC-&gt;&gt;ES: Send Notification Request
+        
+        ES-&gt;&gt;SMTP: Send Email to User
+        SMTP--&gt;&gt;USER: Overdue Item Notification
+        
+        ES-&gt;&gt;SMTP: Send Email to Lab Admin
+        SMTP--&gt;&gt;ADMIN: Overdue Item Alert
+        
+        ES--&gt;&gt;OC: Email Sent Successfully
+        OC-&gt;&gt;DB: Update notification_sent = true
+    end
+</div><h2 id="8-overdue-item-detection--notification-workflow">8. Overdue Item Detection &amp; Notification Workflow </h2>
+<div class="mermaid">flowchart TD
+    START([System Startup / Hourly Cron]) --&gt; CHECK[Check Overdue Items]
+    CHECK --&gt; QUERY[Query Database:&lt;br/&gt;- returnTime = null&lt;br/&gt;- estimatedReturnTime &lt; now&lt;br/&gt;- notificationSent = false]
+    
+    QUERY --&gt; FOUND{Found&lt;br/&gt;Overdue Items?}
+    FOUND --&gt;|No| END([No Action Needed])
+    FOUND --&gt;|Yes| LOOP[For Each Overdue Item]
+    
+    LOOP --&gt; GET_USER[Get User Details&lt;br/&gt;from Database]
+    GET_USER --&gt; GET_ADMIN[Get Lab Admin Details&lt;br/&gt;from Database]
+    GET_ADMIN --&gt; VALIDATE{User &amp; Admin&lt;br/&gt;Emails Valid?}
+    
+    VALIDATE --&gt;|No| SKIP[Skip Item&lt;br/&gt;Log Warning]
+    VALIDATE --&gt;|Yes| SEND_USER[Send Email to User]
+    
+    SEND_USER --&gt; SEND_ADMIN[Send Email to Lab Admin]
+    SEND_ADMIN --&gt; SUCCESS{Emails&lt;br/&gt;Sent Successfully?}
+    
+    SUCCESS --&gt;|Yes| UPDATE[Update Database:&lt;br/&gt;notification_sent = true]
+    SUCCESS --&gt;|No| LOG_ERROR[Log Error&lt;br/&gt;Keep notification_sent = false]
+    
+    UPDATE --&gt; NEXT{More Items?}
+    LOG_ERROR --&gt; NEXT
+    SKIP --&gt; NEXT
+    NEXT --&gt;|Yes| LOOP
+    NEXT --&gt;|No| END
+</div><h2 id="9-issue-item-flow-with-estimated-return-time">9. Issue Item Flow with Estimated Return Time </h2>
+<div class="mermaid">sequenceDiagram
+    participant LA as Lab Admin
+    participant FE as Frontend
+    participant API as API Server
+    participant DB as Database
+    participant OC as Overdue Checker
+    
+    LA-&gt;&gt;FE: Select Item &amp; User&lt;br/&gt;Set Estimated Return Time
+    FE-&gt;&gt;API: POST /api/lab-admin/issue&lt;br/&gt;{itemId, userId, estimatedReturnTime}
+    API-&gt;&gt;DB: Create Issue Record&lt;br/&gt;(with estimated_return_time)
+    API-&gt;&gt;DB: Update Item Status = ISSUED
+    DB--&gt;&gt;API: Success
+    API--&gt;&gt;FE: Item Issued Successfully
+    FE--&gt;&gt;LA: Confirmation
+    
+    Note over OC: Cron Job Runs Every Hour
+    OC-&gt;&gt;DB: Check for Overdue Items
+    DB--&gt;&gt;OC: Found Overdue Item
+    OC-&gt;&gt;OC: Send Email Notifications
+    OC-&gt;&gt;DB: Mark notification_sent = true
+</div><h2 id="10-data-flow-diagram---updated">10. Data Flow Diagram - Updated </h2>
+<div class="mermaid">sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant A as API Server
+    participant M as Middleware
+    participant D as Database
+    participant E as Email Service
+    participant C as Cron Job
+    
+    U-&gt;&gt;F: Login Request
+    F-&gt;&gt;A: POST /api/auth/login
+    A-&gt;&gt;D: Verify Credentials
+    D--&gt;&gt;A: User Data
+    A-&gt;&gt;A: Generate JWT Token
+    A--&gt;&gt;F: Token + User Data
+    F--&gt;&gt;U: Redirect to Dashboard
+    
+    U-&gt;&gt;F: Issue Item with Estimated Return Time
+    F-&gt;&gt;A: API Request + Token&lt;br/&gt;{itemId, userId, estimatedReturnTime}
+    A-&gt;&gt;M: Authenticate Token
+    M-&gt;&gt;M: Verify Role (LAB_ADMIN)
+    M--&gt;&gt;A: Authorized
+    A-&gt;&gt;D: Create Issue Record&lt;br/&gt;(with estimated_return_time)
+    A-&gt;&gt;D: Update Item Status
+    D--&gt;&gt;A: Success
+    A--&gt;&gt;F: Response
+    F--&gt;&gt;U: Item Issued
+    
+    Note over C: Every Hour
+    C-&gt;&gt;D: Query Overdue Items
+    D--&gt;&gt;C: Overdue Records
+    C-&gt;&gt;E: Send Email Notifications
+    E-&gt;&gt;E: Send to User &amp; Lab Admin
+    E--&gt;&gt;C: Success
+    C-&gt;&gt;D: Update notification_sent
+</div><h2 id="11-system-components-overview---updated">11. System Components Overview - Updated </h2>
+<div class="mermaid">graph TB
+    subgraph "Frontend Components"
+        LOGIN_PAGE[Login Page]
+        DASHBOARDS[Dashboards&lt;br/&gt;Role-Based]
+        FORMS[Forms&lt;br/&gt;Create/Edit&lt;br/&gt;with DateTime Picker]
+        TABLES[Tables&lt;br/&gt;Data Display&lt;br/&gt;with Overdue Indicators]
+        SIDEBAR[Sidebar Navigation]
+    end
+    
+    subgraph "Backend Services"
+        AUTH_SERVICE[Authentication Service]
+        RBAC_SERVICE[Role-Based Access Control]
+        USER_SERVICE[User Management]
+        LAB_SERVICE[Lab Management]
+        ITEM_SERVICE[Item Management]
+        ISSUE_SERVICE[Issue Management]
+        EMAIL_SERVICE[Email Service&lt;br/&gt;Nodemailer]
+        OVERDUE_SERVICE[Overdue Checker Service&lt;br/&gt;Cron Job]
+    end
+    
+    subgraph "Middleware"
+        AUTH_MW[Authentication Middleware]
+        AUTHORIZE_MW[Authorization Middleware]
+        ERROR_MW[Error Handling]
+    end
+    
+    subgraph "Database"
+        MONGO[(MongoDB)]
+        PRISMA_CLIENT[Prisma Client]
+        MONGOOSE[Direct MongoDB Access]
+    end
+    
+    subgraph "External"
+        SMTP_SERVER[SMTP Server&lt;br/&gt;Gmail/Email Provider]
+    end
+    
+    LOGIN_PAGE --&gt; AUTH_SERVICE
+    DASHBOARDS --&gt; USER_SERVICE
+    DASHBOARDS --&gt; LAB_SERVICE
+    DASHBOARDS --&gt; ITEM_SERVICE
+    DASHBOARDS --&gt; ISSUE_SERVICE
+    FORMS --&gt; USER_SERVICE
+    FORMS --&gt; LAB_SERVICE
+    FORMS --&gt; ITEM_SERVICE
+    FORMS --&gt; ISSUE_SERVICE
+    
+    AUTH_SERVICE --&gt; AUTH_MW
+    USER_SERVICE --&gt; AUTHORIZE_MW
+    LAB_SERVICE --&gt; AUTHORIZE_MW
+    ITEM_SERVICE --&gt; AUTHORIZE_MW
+    ISSUE_SERVICE --&gt; AUTHORIZE_MW
+    
+    AUTH_MW --&gt; RBAC_SERVICE
+    AUTHORIZE_MW --&gt; RBAC_SERVICE
+    
+    USER_SERVICE --&gt; PRISMA_CLIENT
+    LAB_SERVICE --&gt; PRISMA_CLIENT
+    ITEM_SERVICE --&gt; PRISMA_CLIENT
+    ISSUE_SERVICE --&gt; PRISMA_CLIENT
+    OVERDUE_SERVICE --&gt; PRISMA_CLIENT
+    
+    USER_SERVICE --&gt; MONGOOSE
+    LAB_SERVICE --&gt; MONGOOSE
+    ITEM_SERVICE --&gt; MONGOOSE
+    ISSUE_SERVICE --&gt; MONGOOSE
+    OVERDUE_SERVICE --&gt; MONGOOSE
+    
+    OVERDUE_SERVICE --&gt; EMAIL_SERVICE
+    EMAIL_SERVICE --&gt; SMTP_SERVER
+    
+    PRISMA_CLIENT --&gt; MONGO
+    MONGOOSE --&gt; MONGO
+</div><h2 id="12-authentication--authorization-flow">12. Authentication &amp; Authorization Flow </h2>
+<div class="mermaid">flowchart TD
+    START([User Request]) --&gt; CHECK_TOKEN{Token Present?}
+    CHECK_TOKEN --&gt;|No| REJECT[401 Unauthorized]
+    CHECK_TOKEN --&gt;|Yes| VERIFY[Verify JWT Token]
+    VERIFY --&gt; VALID{Token Valid?}
+    VALID --&gt;|No| REJECT
+    VALID --&gt;|Yes| FETCH_USER[Fetch User from DB]
+    FETCH_USER --&gt; CHECK_ROLE{Check User Role}
+    CHECK_ROLE --&gt; SUPER_ADMIN{Super Admin?}
+    CHECK_ROLE --&gt; ADMIN{Admin?}
+    CHECK_ROLE --&gt; LAB_ADMIN{Lab Admin?}
+    CHECK_ROLE --&gt; USER{User?}
+    
+    SUPER_ADMIN --&gt;|Yes| ALLOW_SA[Allow Super Admin Routes]
+    ADMIN --&gt;|Yes| ALLOW_AD[Allow Admin Routes]
+    LAB_ADMIN --&gt;|Yes| ALLOW_LA[Allow Lab Admin Routes]
+    USER --&gt;|Yes| ALLOW_U[Allow User Routes]
+    
+    SUPER_ADMIN --&gt;|No| CHECK_NEXT1{Next Role?}
+    ADMIN --&gt;|No| CHECK_NEXT2{Next Role?}
+    LAB_ADMIN --&gt;|No| CHECK_NEXT3{Next Role?}
+    USER --&gt;|No| FORBIDDEN[403 Forbidden]
+    
+    ALLOW_SA --&gt; PROCESS[Process Request]
+    ALLOW_AD --&gt; PROCESS
+    ALLOW_LA --&gt; PROCESS
+    ALLOW_U --&gt; PROCESS
+</div><h2 id="13-issuereturn-workflow-with-overdue-tracking">13. Issue/Return Workflow with Overdue Tracking </h2>
+<div class="mermaid">stateDiagram-v2
+    [*] --&gt; Available: Item Created
+    
+    Available --&gt; Issued: Lab Admin Issues Item&lt;br/&gt;Sets estimated_return_time
+    Issued --&gt; Overdue: estimated_return_time Passed&lt;br/&gt;notification_sent = false
+    Overdue --&gt; Overdue: Email Sent&lt;br/&gt;notification_sent = true
+    Overdue --&gt; Available: User/Lab Admin Returns Item
+    Issued --&gt; Available: User/Lab Admin Returns Item&lt;br/&gt;(Before Due Date)
+    Available --&gt; Maintenance: Lab Admin Sets Maintenance
+    Maintenance --&gt; Available: Lab Admin Sets Available
+    
+    note right of Available
+        Item can be issued
+        to users
+    end note
+    
+    note right of Issued
+        Item is with user
+        estimated_return_time set
+        System monitors for overdue
+    end note
+    
+    note right of Overdue
+        Item exceeded
+        estimated return time
+        Email notifications sent
+        to user and lab admin
+    end note
+    
+    note right of Maintenance
+        Item is being
+        repaired/maintained
+    end note
+</div><h2 id="14-complete-system-overview">14. Complete System Overview </h2>
+<div class="mermaid">graph TB
+    subgraph "User Interface Layer"
+        UI[React Frontend&lt;br/&gt;- Login&lt;br/&gt;- Dashboards&lt;br/&gt;- Forms&lt;br/&gt;- Tables&lt;br/&gt;- Overdue Indicators]
+    end
+    
+    subgraph "API Layer"
+        REST[Express REST API&lt;br/&gt;- Authentication&lt;br/&gt;- Role-Based Routes&lt;br/&gt;- CRUD Operations]
+    end
+    
+    subgraph "Business Logic Layer"
+        BL1[User Management]
+        BL2[Lab Management]
+        BL3[Item Management]
+        BL4[Issue Management]
+        BL5[Email Notification]
+        BL6[Overdue Monitoring]
+    end
+    
+    subgraph "Data Persistence Layer"
+        DB[(MongoDB&lt;br/&gt;- Users&lt;br/&gt;- Labs&lt;br/&gt;- Items&lt;br/&gt;- Issue Records)]
+    end
+    
+    subgraph "Background Services"
+        CRON[Cron Job&lt;br/&gt;Runs Every Hour]
+        EMAIL[Email Service&lt;br/&gt;Nodemailer]
+    end
+    
+    subgraph "External Services"
+        SMTP[SMTP Server&lt;br/&gt;Email Delivery]
+    end
+    
+    UI --&gt; REST
+    REST --&gt; BL1
+    REST --&gt; BL2
+    REST --&gt; BL3
+    REST --&gt; BL4
+    
+    BL1 --&gt; DB
+    BL2 --&gt; DB
+    BL3 --&gt; DB
+    BL4 --&gt; DB
+    
+    CRON --&gt; BL6
+    BL6 --&gt; DB
+    BL6 --&gt; BL5
+    BL5 --&gt; EMAIL
+    EMAIL --&gt; SMTP
+    
+    BL4 --&gt; BL5
+</div><h2 id="15-project-flow-diagram">15. Project Flow Diagram </h2>
+<div class="mermaid">flowchart TD
+    START([Project Start]) --&gt; INIT[System Initialization]
+    
+    INIT --&gt; SETUP_DB[Setup MongoDB Database]
+    SETUP_DB --&gt; SETUP_PRISMA[Configure Prisma Schema]
+    SETUP_PRISMA --&gt; SEED[Seed Initial Data&lt;br/&gt;Super Admin Account]
+    
+    SEED --&gt; DEPLOY[Deploy Application]
+    DEPLOY --&gt; READY[System Ready]
+    
+    READY --&gt; LOGIN_PAGE[Login Page]
+    LOGIN_PAGE --&gt; AUTH_CHECK{Authentication&lt;br/&gt;Success?}
+    
+    AUTH_CHECK --&gt;|No| LOGIN_PAGE
+    AUTH_CHECK --&gt;|Yes| ROLE_CHECK{User Role?}
+    
+    ROLE_CHECK --&gt;|SUPER_ADMIN| SA_FLOW[Super Admin Flow]
+    ROLE_CHECK --&gt;|ADMIN| AD_FLOW[Admin Flow]
+    ROLE_CHECK --&gt;|LAB_ADMIN| LA_FLOW[Lab Admin Flow]
+    ROLE_CHECK --&gt;|USER| U_FLOW[User Flow]
+    
+    subgraph "Super Admin Flow"
+        SA_FLOW --&gt; SA_DASH[Super Admin Dashboard]
+        SA_DASH --&gt; SA_CREATE_ADMIN[Create Admin Account]
+        SA_DASH --&gt; SA_CREATE_LAB[Create Laboratory]
+        SA_DASH --&gt; SA_ASSIGN[Assign Admin to Lab]
+        SA_DASH --&gt; SA_VIEW[View Admins &amp; Labs]
+        
+        SA_CREATE_ADMIN --&gt; SA_DASH
+        SA_CREATE_LAB --&gt; SA_DASH
+        SA_ASSIGN --&gt; SA_DASH
+        
+        SA_VIEW --&gt; SA_EDIT_ADMIN[Edit Admin]
+        SA_VIEW --&gt; SA_DELETE_ADMIN[Delete Admin]
+        SA_VIEW --&gt; SA_EDIT_LAB[Edit Lab]
+        SA_VIEW --&gt; SA_DELETE_LAB[Delete Lab]
+        
+        SA_EDIT_ADMIN --&gt; SA_DASH
+        SA_DELETE_ADMIN --&gt; SA_DASH
+        SA_EDIT_LAB --&gt; SA_DASH
+        SA_DELETE_LAB --&gt; SA_DASH
+    end
+    
+    subgraph "Admin Flow"
+        AD_FLOW --&gt; AD_DASH[Admin Dashboard]
+        AD_DASH --&gt; AD_VIEW_LABS[View My Labs]
+        AD_DASH --&gt; AD_CREATE_LA[Create Lab Admin]
+        AD_DASH --&gt; AD_REPORTS[View Lab Reports]
+        
+        AD_VIEW_LABS --&gt; AD_DASH
+        AD_CREATE_LA --&gt; AD_DASH
+        AD_REPORTS --&gt; AD_DASH
+    end
+    
+    subgraph "Lab Admin Flow"
+        LA_FLOW --&gt; LA_DASH[Lab Admin Dashboard]
+        LA_DASH --&gt; LA_MANAGE_ITEMS[Manage Items&lt;br/&gt;Add/Edit/Delete]
+        LA_DASH --&gt; LA_CREATE_USER[Create User Account]
+        LA_DASH --&gt; LA_ISSUE[Issue Items to Users&lt;br/&gt;Set Estimated Return Time]
+        LA_DASH --&gt; LA_HISTORY[View Issue History&lt;br/&gt;Mark Returns]
+        
+        LA_MANAGE_ITEMS --&gt; LA_DASH
+        LA_CREATE_USER --&gt; LA_DASH
+        LA_ISSUE --&gt; LA_DASH
+        LA_HISTORY --&gt; LA_DASH
+    end
+    
+    subgraph "User Flow"
+        U_FLOW --&gt; U_DASH[User Dashboard]
+        U_DASH --&gt; U_VIEW_ITEMS[View Available Items]
+        U_DASH --&gt; U_MY_ITEMS[My Issued Items&lt;br/&gt;Check Overdue Status]
+        
+        U_VIEW_ITEMS --&gt; U_REQUEST[Request Item Issue]
+        U_REQUEST --&gt; U_DASH
+        
+        U_MY_ITEMS --&gt; U_CHECK_OVERDUE{Item Overdue?}
+        U_CHECK_OVERDUE --&gt;|Yes| U_OVERDUE_WARNING[Display Overdue Warning]
+        U_CHECK_OVERDUE --&gt;|No| U_NORMAL[Display Normal Status]
+        
+        U_OVERDUE_WARNING --&gt; U_RETURN[Return Item]
+        U_NORMAL --&gt; U_RETURN
+        U_RETURN --&gt; U_DASH
+    end
+    
+    subgraph "Background Processes"
+        CRON_START([System Startup]) --&gt; CRON_INIT[Initialize Cron Job]
+        CRON_INIT --&gt; CRON_SCHEDULE[Schedule Hourly Check]
+        CRON_SCHEDULE --&gt; CRON_LOOP[Every Hour]
+        
+        CRON_LOOP --&gt; CHECK_OVERDUE[Check Overdue Items]
+        CHECK_OVERDUE --&gt; QUERY_DB[Query Database&lt;br/&gt;for Overdue Records]
+        QUERY_DB --&gt; FOUND_OVERDUE{Found&lt;br/&gt;Overdue Items?}
+        
+        FOUND_OVERDUE --&gt;|No| CRON_LOOP
+        FOUND_OVERDUE --&gt;|Yes| SEND_EMAILS[Send Email Notifications&lt;br/&gt;to User &amp; Lab Admin]
+        SEND_EMAILS --&gt; UPDATE_FLAG[Update notification_sent = true]
+        UPDATE_FLAG --&gt; CRON_LOOP
+    end
+    
+    LA_ISSUE --&gt; CREATE_RECORD[Create Issue Record&lt;br/&gt;with estimated_return_time]
+    CREATE_RECORD --&gt; UPDATE_ITEM_STATUS[Update Item Status = ISSUED]
+    UPDATE_ITEM_STATUS --&gt; MONITOR[System Monitors for Overdue]
+    
+    MONITOR --&gt; CHECK_OVERDUE
+    
+    U_RETURN --&gt; RETURN_PROCESS[Return Process]
+    LA_HISTORY --&gt; RETURN_PROCESS
+    RETURN_PROCESS --&gt; UPDATE_RETURN_TIME[Update return_time in Record]
+    UPDATE_RETURN_TIME --&gt; UPDATE_ITEM_AVAILABLE[Update Item Status = AVAILABLE]
+    UPDATE_ITEM_AVAILABLE --&gt; U_DASH
+    UPDATE_ITEM_AVAILABLE --&gt; LA_DASH
+    
+    style START fill:#e1f5ff
+    style READY fill:#c8e6c9
+    style SA_FLOW fill:#fff9c4
+    style AD_FLOW fill:#e1bee7
+    style LA_FLOW fill:#b3e5fc
+    style U_FLOW fill:#c5e1a5
+    style CRON_START fill:#ffccbc
+    style MONITOR fill:#f8bbd0
+</div><hr>
+<h2 id="notes">Notes </h2>
+<ul>
+<li>All diagrams use Mermaid syntax and can be rendered in:
+<ul>
+<li>GitHub Markdown</li>
+<li>VS Code with Mermaid extension</li>
+<li>Online Mermaid editors (mermaid.live)</li>
+<li>Documentation tools that support Mermaid</li>
+</ul>
+</li>
+</ul>
+<h3 id="key-updates-in-this-version">Key Updates in This Version: </h3>
+<ol>
+<li><strong>Email Notification System</strong>: Added email service and SMTP integration</li>
+<li><strong>Overdue Checker Service</strong>: Added cron job for automatic overdue detection</li>
+<li><strong>Estimated Return Time</strong>: New field in IssueRecord for tracking expected return dates</li>
+<li><strong>Notification Tracking</strong>: <code>notification_sent</code> field to prevent duplicate emails</li>
+<li><strong>Updated User Flows</strong>: Include estimated return time setting and overdue indicators</li>
+<li><strong>Updated ERD</strong>: Includes new fields (<code>estimated_return_time</code>, <code>notification_sent</code>)</li>
+<li><strong>New API Endpoints</strong>: Manual trigger for overdue check and test email endpoint</li>
+</ol>
+<h3 id="system-features">System Features: </h3>
+<ul>
+<li><strong>MongoDB</strong> with Prisma ORM for most operations</li>
+<li><strong>Direct MongoDB operations</strong> (via Mongoose) for create/update to avoid transaction requirements</li>
+<li><strong>JWT tokens</strong> for authentication with 7-day expiration</li>
+<li><strong>Role-based access control</strong> enforced at middleware level</li>
+<li><strong>Automatic overdue detection</strong> via cron job (runs every hour)</li>
+<li><strong>Email notifications</strong> sent to both users and lab admins for overdue items</li>
+<li><strong>Data consistency checks</strong> and automatic fixes in overdue checker</li>
+</ul>
+
+      </div>
+      
+      
+    
+    
+    <script type="module">
+// TODO: If ZenUML gets integrated into mermaid in the future,
+//      we can remove the following lines.
+
+
+var MERMAID_CONFIG = ({"startOnLoad":false});
+if (typeof MERMAID_CONFIG !== 'undefined') {
+  MERMAID_CONFIG.startOnLoad = false
+  MERMAID_CONFIG.cloneCssStyles = false
+  MERMAID_CONFIG.theme = "default"
+}
+
+mermaid.initialize(MERMAID_CONFIG || {})
+if (typeof(window['Reveal']) !== 'undefined') {
+  function mermaidRevealHelper(event) {
+    var currentSlide = event.currentSlide
+    var diagrams = currentSlide.querySelectorAll('.mermaid')
+    for (var i = 0; i < diagrams.length; i++) {
+      var diagram = diagrams[i]
+      if (!diagram.hasAttribute('data-processed')) {
+        mermaid.init(null, diagram, ()=> {
+          Reveal.slide(event.indexh, event.indexv)
+        })
+      }
+    }
+  }
+  Reveal.addEventListener('slidetransitionend', mermaidRevealHelper)
+  Reveal.addEventListener('ready', mermaidRevealHelper)
+  await mermaid.run({
+    nodes: document.querySelectorAll('.mermaid')
+  })
+} else {
+  await mermaid.run({
+    nodes: document.querySelectorAll('.mermaid')
+  })
+}
+</script>
+    
+    
+    
+  
+    </body></html>
