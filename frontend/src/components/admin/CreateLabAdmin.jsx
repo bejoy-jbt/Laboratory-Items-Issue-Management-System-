@@ -42,7 +42,7 @@ const CreateLabAdmin = ({ onSuccess }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Lab Admin</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white-800">Create Lab Admin</h2>
       <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (

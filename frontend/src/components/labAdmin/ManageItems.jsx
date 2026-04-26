@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import ConfirmModal from '../ConfirmModal';
+import NotificationModal from '../NotificationModal';
 
 const ManageItems = ({ onUpdate }) => {
   const [items, setItems] = useState([]);
@@ -14,6 +16,10 @@ const ManageItems = ({ onUpdate }) => {
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notification, setNotification] = useState({ type: 'success', message: '' });
+  const [selectedItemId, setSelectedItemId] = useState(null);
 
   useEffect(() => {
     fetchItems();
@@ -64,18 +70,29 @@ const ManageItems = ({ onUpdate }) => {
     setShowForm(true);
   };
 
-  const handleDelete = async (itemId) => {
-    if (!window.confirm('Are you sure you want to delete this item?')) {
-      return;
-    }
+  const handleDeleteClick = (itemId) => {
+    setSelectedItemId(itemId);
+    setShowConfirmModal(true);
+  };
 
+  const handleDelete = async () => {
     try {
-      await axios.delete(`/api/lab-admin/items/${itemId}`);
-      setMessage('Item deleted successfully!');
+      await axios.delete(`/api/lab-admin/items/${selectedItemId}`);
+      setNotification({
+        type: 'success',
+        title: 'Success',
+        message: 'Item deleted successfully!'
+      });
+      setShowNotification(true);
       fetchItems();
       if (onUpdate) onUpdate();
     } catch (error) {
-      setError(error.response?.data?.message || 'Failed to delete item');
+      setNotification({
+        type: 'error',
+        title: 'Error',
+        message: error.response?.data?.message || 'Failed to delete item'
+      });
+      setShowNotification(true);
     }
   };
 
@@ -95,7 +112,7 @@ const ManageItems = ({ onUpdate }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Manage Items</h2>
+        <h2 className="text-2xl font-extrabold tracking-tight text-slate-100">Manage Items</h2>
         <button
           onClick={() => {
             setShowForm(true);
@@ -120,8 +137,8 @@ const ManageItems = ({ onUpdate }) => {
       )}
 
       {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-xl font-bold mb-4">{editingItem ? 'Edit Item' : 'Add New Item'}</h3>
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6 text-slate-900">
+          <h3 className="text-xl font-bold mb-4 text-slate-900">{editingItem ? 'Edit Item' : 'Add New Item'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
@@ -188,21 +205,23 @@ const ManageItems = ({ onUpdate }) => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden text-slate-900">
+        <table className="min-w-full divide-y divide-slate-200">
+          <thead className="bg-slate-50 text-slate-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">Name</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">Category</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">Actions</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-slate-200 text-slate-800">
             {items.map((item) => (
-              <tr key={item.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{item.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category}</td>
+              <tr key={item.id} className="hover:bg-slate-50/80">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
+                  {item.name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{item.category}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 text-xs rounded ${getStatusColor(item.status)}`}>
                     {item.status}
@@ -216,8 +235,8 @@ const ManageItems = ({ onUpdate }) => {
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(item.id)}
-                    className="text-red-600 hover:text-red-800"
+                    onClick={() => handleDeleteClick(item.id)}
+                    className="text-red-600 hover:text-red-800 transition-colors"
                   >
                     Delete
                   </button>
@@ -227,9 +246,29 @@ const ManageItems = ({ onUpdate }) => {
           </tbody>
         </table>
         {items.length === 0 && (
-          <div className="text-center py-8 text-gray-500">No items found</div>
+          <div className="text-center py-8 text-slate-700">No items found</div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Item"
+        message="Are you sure you want to delete this item? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+
+      <NotificationModal
+        isOpen={showNotification}
+        onClose={() => setShowNotification(false)}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        duration={4000}
+      />
     </div>
   );
 };

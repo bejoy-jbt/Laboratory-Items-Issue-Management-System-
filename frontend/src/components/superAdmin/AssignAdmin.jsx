@@ -47,7 +47,7 @@ const AssignAdmin = ({ onSuccess }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Assign Admin to Lab</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white-800">Assign Admin to Lab</h2>
       <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (
@@ -66,7 +66,7 @@ const AssignAdmin = ({ onSuccess }) => {
               value={formData.labId}
               onChange={(e) => setFormData({ ...formData, labId: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a lab</option>
               {labs.map((lab) => (
@@ -82,7 +82,7 @@ const AssignAdmin = ({ onSuccess }) => {
               value={formData.empId}
               onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select an admin</option>
               {admins.map((admin) => (

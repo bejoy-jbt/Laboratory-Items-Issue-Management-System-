@@ -207,6 +207,7 @@ router.get('/users', async (req, res) => {
         id: true,
         name: true,
         email: true,
+        imageUrl: true,
         createdAt: true
       },
       orderBy: {

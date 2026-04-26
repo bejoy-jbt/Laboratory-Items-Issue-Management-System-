@@ -3,10 +3,10 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       
-      <link rel="stylesheet" href="file:///c:\Users\LENOVO\.cursor\extensions\shd101wyy.markdown-preview-enhanced-0.8.20-universal\crossnote\dependencies\katex\katex.min.css">
+      <link rel="stylesheet" href="file:///c:\Users\LENOVO\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.22\crossnote\dependencies\katex\katex.min.css">
       
       
-      <script type="text/javascript" src="file:///c:\Users\LENOVO\.cursor\extensions\shd101wyy.markdown-preview-enhanced-0.8.20-universal\crossnote\dependencies\mermaid\mermaid.min.js" charset="UTF-8"></script>
+      <script type="text/javascript" src="file:///c:\Users\LENOVO\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.22\crossnote\dependencies\mermaid\mermaid.min.js" charset="UTF-8"></script>
       
       
       <style>
@@ -15,13 +15,13 @@
 /*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
 
       </style>
-      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+      <script type="text/javascript">
   document.addEventListener("DOMContentLoaded", function () {
     // your code here
   });
-</script></head><body for="html-export">
-    
-    
+</script>
+    </head>
+    <body for="html-export">
       <div class="crossnote markdown-preview  ">
       
 <h1 id="laboratory-items-issue-management-system---updated-diagrams">Laboratory Items Issue Management System - Updated Diagrams </h1>
@@ -43,8 +43,14 @@
         LA[Lab Admin Routes]
         UR[User Routes]
         AUTH_R[Auth Routes]
+        FR_R[Face Recognition Routes]
         EMAIL_SVC[Email Service&lt;br/&gt;Nodemailer]
         OVERDUE_SVC[Overdue Checker Service&lt;br/&gt;Cron Job]
+    end
+    
+    subgraph "Face Recognition Service"
+        PYTHON_SVC[Python Flask Service&lt;br/&gt;Face Detection &amp; Verification]
+        FACE_API[face_recognition Library]
     end
     
     subgraph "Data Layer"
@@ -54,10 +60,10 @@
     end
     
     subgraph "Database Collections"
-        USERS[(Users)]
+        USERS[(Users&lt;br/&gt;with faceDescriptor&lt;br/&gt;and imageUrl)]
         LABS[(Labs)]
         ITEMS[(Items)]
-        RECORDS[(Issue Records&lt;br/&gt;with estimated_return_time&lt;br/&gt;and notification_sent)]
+        RECORDS[(Issue Records&lt;br/&gt;with estimated_return_time,&lt;br/&gt;notification_sent,&lt;br/&gt;issueVerificationStatus,&lt;br/&gt;returnVerificationStatus)]
     end
     
     subgraph "External Services"
@@ -72,16 +78,22 @@
     AUTH --&gt; LA
     AUTH --&gt; UR
     AUTH --&gt; AUTH_R
+    AUTH --&gt; FR_R
     
     SA --&gt; PRISMA
     AD --&gt; PRISMA
     LA --&gt; PRISMA
     UR --&gt; PRISMA
     AUTH_R --&gt; PRISMA
+    FR_R --&gt; PRISMA
     
     SA --&gt; MONGOOSE
     AD --&gt; MONGOOSE
     LA --&gt; MONGOOSE
+    UR --&gt; MONGOOSE
+    
+    FR_R --&gt; PYTHON_SVC
+    PYTHON_SVC --&gt; FACE_API
     
     OVERDUE_SVC --&gt; PRISMA
     OVERDUE_SVC --&gt; MONGOOSE
@@ -104,6 +116,7 @@
     DASH --&gt; ASSIGN[Assign Admin to Lab]
     DASH --&gt; VIEW_ADMINS[View All Admins]
     DASH --&gt; VIEW_LABS[View All Labs]
+    DASH --&gt; REPORTS[System Reports]
     
     CREATE_ADMIN --&gt; FORM1[Fill Admin Details]
     FORM1 --&gt; SUBMIT1[Submit]
@@ -148,11 +161,40 @@
     CHECK_LAB_DATA --&gt;|No| SUCCESS_DELETE_LAB[Lab Deleted]
     ERROR_LAB --&gt; DASH
     SUCCESS_DELETE_LAB --&gt; DASH
+    
+    DASH --&gt; CREATE_USER[Create User]
+    CREATE_USER --&gt; SELECT_LAB_USER[Select Lab]
+    SELECT_LAB_USER --&gt; FORM_USER[Fill User Details]
+    FORM_USER --&gt; FACE_SCAN_USER[Scan Face Image&lt;br/&gt;Capture Face Descriptor]
+    FACE_SCAN_USER --&gt; SUBMIT_USER[Submit]
+    SUBMIT_USER --&gt; SUCCESS_USER[User Created&lt;br/&gt;with Face Data]
+    SUCCESS_USER --&gt; DASH
+    
+    DASH --&gt; VIEW_USERS[View All Users]
+    VIEW_USERS --&gt; USER_LIST[Display All Users&lt;br/&gt;with Lab &amp; Admin Info]
+    USER_LIST --&gt; DASH
+    
+    DASH --&gt; VIEW_ITEMS[View All Items]
+    VIEW_ITEMS --&gt; ITEM_LIST[Display All Items&lt;br/&gt;with Lab, Status,&lt;br/&gt;Filter by Status/Lab]
+    ITEM_LIST --&gt; DASH
+    
+    REPORTS --&gt; SELECT_REPORT_TYPE{Select Report Type}
+    SELECT_REPORT_TYPE --&gt;|Overview| OVERVIEW_REPORT[System Overview&lt;br/&gt;All Admins, Labs, Users,&lt;br/&gt;Lab Admins, Items with States, Issues]
+    SELECT_REPORT_TYPE --&gt;|Admin| SELECT_ADMIN_REPORT[Select Admin]
+    SELECT_REPORT_TYPE --&gt;|Lab| SELECT_LAB_REPORT[Select Lab]
+    
+    SELECT_ADMIN_REPORT --&gt; ADMIN_REPORT[Admin Report&lt;br/&gt;All Labs, Items, Users,&lt;br/&gt;Issue Records]
+    SELECT_LAB_REPORT --&gt; LAB_REPORT[Lab Report&lt;br/&gt;Items, Users, Lab Admins,&lt;br/&gt;Issue Records]
+    
+    OVERVIEW_REPORT --&gt; DASH
+    ADMIN_REPORT --&gt; DASH
+    LAB_REPORT --&gt; DASH
 </div><h3 id="22-admin-flow">2.2 Admin Flow </h3>
 <div class="mermaid">flowchart TD
     START([Admin Login]) --&gt; DASH[Admin Dashboard]
     DASH --&gt; VIEW_LABS[View My Labs]
     DASH --&gt; CREATE_LA[Create Lab Admin]
+    DASH --&gt; VIEW_LA[View Lab Admins]
     DASH --&gt; REPORTS[View Lab Reports]
     
     VIEW_LABS --&gt; LAB_LIST[Display Labs&lt;br/&gt;with Stats]
@@ -163,13 +205,47 @@
     SUBMIT --&gt; SUCCESS[Lab Admin Created]
     SUCCESS --&gt; DASH
     
+    DASH --&gt; CREATE_USER[Create User]
+    CREATE_USER --&gt; SELECT_LAB_USER[Select Lab]
+    SELECT_LAB_USER --&gt; FORM_USER[Fill User Details]
+    FORM_USER --&gt; FACE_SCAN_USER[Scan Face Image&lt;br/&gt;Capture Face Descriptor]
+    FACE_SCAN_USER --&gt; SUBMIT_USER[Submit]
+    SUBMIT_USER --&gt; SUCCESS_USER[User Created&lt;br/&gt;with Face Data]
+    SUCCESS_USER --&gt; DASH
+    
+    VIEW_LA --&gt; LA_LIST[Display All Lab Admins&lt;br/&gt;Created by Admin&lt;br/&gt;with Lab Information]
+    LA_LIST --&gt; EDIT_LA[Edit Lab Admin]
+    LA_LIST --&gt; DELETE_LA[Delete Lab Admin]
+    EDIT_LA --&gt; FORM_EDIT_LA[Update Lab Admin Details&lt;br/&gt;Name, Email, Lab, Password]
+    FORM_EDIT_LA --&gt; SUBMIT_EDIT_LA[Submit]
+    SUBMIT_EDIT_LA --&gt; SUCCESS_EDIT_LA[Lab Admin Updated]
+    SUCCESS_EDIT_LA --&gt; DASH
+    DELETE_LA --&gt; CONFIRM_DELETE_LA[Confirm Deletion]
+    CONFIRM_DELETE_LA --&gt; SUCCESS_DELETE_LA[Lab Admin Deleted]
+    SUCCESS_DELETE_LA --&gt; DASH
+    
+    DASH --&gt; VIEW_USERS[View Users]
+    VIEW_USERS --&gt; USER_LIST[Display All Users&lt;br/&gt;Created by Admin&lt;br/&gt;with Lab Information]
+    USER_LIST --&gt; EDIT_USER[Edit User]
+    USER_LIST --&gt; DELETE_USER[Delete User]
+    EDIT_USER --&gt; FORM_EDIT_USER[Update User Details&lt;br/&gt;Name, Email, Lab, Password]
+    FORM_EDIT_USER --&gt; SUBMIT_EDIT_USER[Submit]
+    SUBMIT_EDIT_USER --&gt; SUCCESS_EDIT_USER[User Updated]
+    SUCCESS_EDIT_USER --&gt; DASH
+    DELETE_USER --&gt; CONFIRM_DELETE_USER[Confirm Deletion]
+    CONFIRM_DELETE_USER --&gt; CHECK_ACTIVE_ISSUES{User Has&lt;br/&gt;Active Issues?}
+    CHECK_ACTIVE_ISSUES --&gt;|Yes| ERROR_USER[Error: Cannot Delete&lt;br/&gt;Return Items First]
+    CHECK_ACTIVE_ISSUES --&gt;|No| SUCCESS_DELETE_USER[User Deleted]
+    ERROR_USER --&gt; DASH
+    SUCCESS_DELETE_USER --&gt; DASH
+    
     REPORTS --&gt; SELECT_LAB2[Select Lab]
     SELECT_LAB2 --&gt; REPORT_DATA[View Statistics&lt;br/&gt;Items, Users, Issues]
 </div><h3 id="23-lab-admin-flow">2.3 Lab Admin Flow </h3>
 <div class="mermaid">flowchart TD
     START([Lab Admin Login]) --&gt; DASH[Lab Admin Dashboard]
     DASH --&gt; MANAGE_ITEMS[Manage Items]
-    DASH --&gt; CREATE_USER[Create User]
+    DASH --&gt; VIEW_USERS[View Users&lt;br/&gt;Read-Only]
     DASH --&gt; ISSUE[Issue Items]
     DASH --&gt; HISTORY[Issue History]
     
@@ -177,10 +253,8 @@
     MANAGE_ITEMS --&gt; EDIT_ITEM[Edit Item]
     MANAGE_ITEMS --&gt; DELETE_ITEM[Delete Item]
     
-    CREATE_USER --&gt; USER_FORM[Fill User Details]
-    USER_FORM --&gt; SUBMIT_USER[Submit]
-    SUBMIT_USER --&gt; SUCCESS_USER[User Created]
-    SUCCESS_USER --&gt; DASH
+    VIEW_USERS --&gt; USER_LIST[Display All Users&lt;br/&gt;in Lab&lt;br/&gt;View Only - No Edit/Delete]
+    USER_LIST --&gt; DASH
     
     ISSUE --&gt; SELECT_ITEM[Select Item]
     SELECT_ITEM --&gt; SELECT_USER[Select User from Dropdown]
@@ -189,20 +263,31 @@
     SUBMIT_ISSUE --&gt; SUCCESS_ISSUE[Item Issued&lt;br/&gt;Record Created with&lt;br/&gt;estimated_return_time]
     SUCCESS_ISSUE --&gt; DASH
     
-    HISTORY --&gt; VIEW_RECORDS[View All Records&lt;br/&gt;with Overdue Indicators]
-    VIEW_RECORDS --&gt; RETURN[Mark as Returned]
-    RETURN --&gt; UPDATE_STATUS[Update Item Status]
+    HISTORY --&gt; VIEW_RECORDS[View All Records&lt;br/&gt;with Overdue Indicators&lt;br/&gt;Issue &amp; Return Verification Status]
+    VIEW_RECORDS --&gt; RETURN[Mark as Returned&lt;br/&gt;with Face Verification]
+    RETURN --&gt; FACE_VERIFY_RETURN_LA[Face Verification&lt;br/&gt;Scan User's Face]
+    FACE_VERIFY_RETURN_LA --&gt; VERIFY_RETURN_LA{Face Matches?}
+    VERIFY_RETURN_LA --&gt;|Yes| RETURN_SUCCESS_LA[Item Returned&lt;br/&gt;Verification: VERIFIED]
+    VERIFY_RETURN_LA --&gt;|No| RETURN_FAIL_LA[Return Failed&lt;br/&gt;Verification: FAILED]
+    RETURN_SUCCESS_LA --&gt; UPDATE_STATUS[Update Item Status]
+    RETURN_FAIL_LA --&gt; VIEW_RECORDS
 </div><h3 id="24-user-flow">2.4 User Flow </h3>
 <div class="mermaid">flowchart TD
     START([User Login]) --&gt; DASH[User Dashboard]
     DASH --&gt; VIEW_ITEMS[View Available Items]
     DASH --&gt; MY_ISSUED[My Issued Items]
     
-    VIEW_ITEMS --&gt; REQUEST[Request Item Issue]
-    REQUEST --&gt; NOTIFY[Notify Lab Admin]
+    VIEW_ITEMS --&gt; SELECT_ITEM[Select Item]
+    SELECT_ITEM --&gt; SET_RETURN_TIME[Set Estimated Return Time]
+    SET_RETURN_TIME --&gt; FACE_VERIFY_ISSUE[Face Verification&lt;br/&gt;Scan Live Face]
+    FACE_VERIFY_ISSUE --&gt; VERIFY_MATCH{Face Matches&lt;br/&gt;Registered User?}
+    VERIFY_MATCH --&gt;|Yes| ISSUE_SUCCESS[Item Issued&lt;br/&gt;Verification Status: VERIFIED]
+    VERIFY_MATCH --&gt;|No| VERIFY_FAIL[Verification Failed&lt;br/&gt;Status: FAILED]
+    VERIFY_FAIL --&gt; DASH
+    ISSUE_SUCCESS --&gt; DASH
     
-    MY_ISSUED --&gt; ACTIVE[Active Issues&lt;br/&gt;Shows Estimated Return Time&lt;br/&gt;Highlights Overdue Items]
-    MY_ISSUED --&gt; RETURNED[Returned Items]
+    MY_ISSUED --&gt; ACTIVE[Active Issues&lt;br/&gt;Shows Estimated Return Time&lt;br/&gt;Highlights Overdue Items&lt;br/&gt;Shows Verification Status]
+    MY_ISSUED --&gt; RETURNED[Returned Items&lt;br/&gt;Shows Return Verification Status]
     
     ACTIVE --&gt; CHECK_OVERDUE{Item Overdue?}
     CHECK_OVERDUE --&gt;|Yes| SHOW_OVERDUE[Display Overdue Warning&lt;br/&gt;Red Highlight]
@@ -210,9 +295,13 @@
     
     SHOW_OVERDUE --&gt; RETURN_ITEM[Return Item]
     SHOW_NORMAL --&gt; RETURN_ITEM
-    RETURN_ITEM --&gt; CONFIRM[Confirm Return]
-    CONFIRM --&gt; UPDATE[Update Status]
-    UPDATE --&gt; SUCCESS[Item Returned]
+    RETURN_ITEM --&gt; FACE_VERIFY_RETURN[Face Verification&lt;br/&gt;Scan Live Face]
+    FACE_VERIFY_RETURN --&gt; VERIFY_RETURN_MATCH{Face Matches&lt;br/&gt;Original Issuer?}
+    VERIFY_RETURN_MATCH --&gt;|Yes| RETURN_SUCCESS[Item Returned&lt;br/&gt;Verification Status: VERIFIED]
+    VERIFY_RETURN_MATCH --&gt;|No| RETURN_FAIL[Return Failed&lt;br/&gt;Verification Status: FAILED]
+    RETURN_FAIL --&gt; DASH
+    RETURN_SUCCESS --&gt; UPDATE[Update Status]
+    UPDATE --&gt; SUCCESS[Item Returned Successfully]
     SUCCESS --&gt; DASH
 </div><h2 id="3-entity-relationship-diagram-erd---updated">3. Entity Relationship Diagram (ERD) - Updated </h2>
 <div class="mermaid">erDiagram
@@ -238,6 +327,8 @@
         string password
         enum role "SUPER_ADMIN, ADMIN, LAB_ADMIN, USER"
         string lab_id FK "nullable"
+        string image_url "nullable - base64 or file path"
+        string face_descriptor "nullable - base64 encoded"
         datetime created_at
         datetime updated_at
     }
@@ -268,9 +359,11 @@
         string item_id FK
         string lab_id FK
         datetime issue_time
-        datetime estimated_return_time "nullable - NEW"
+        datetime estimated_return_time "nullable"
         datetime return_time "nullable"
-        boolean notification_sent "default false - NEW"
+        boolean notification_sent "default false"
+        enum issue_verification_status "VERIFIED, FAILED, PENDING"
+        enum return_verification_status "VERIFIED, FAILED, PENDING - nullable"
         datetime created_at
         datetime updated_at
     }
@@ -283,6 +376,8 @@
 <li><strong>password</strong>: String (Hashed with bcrypt)</li>
 <li><strong>role</strong>: Enum (SUPER_ADMIN, ADMIN, LAB_ADMIN, USER)</li>
 <li><strong>lab_id</strong>: Foreign Key to Lab (Optional - for LAB_ADMIN and USER)</li>
+<li><strong>image_url</strong>: String (Optional) - Base64 encoded image or file path</li>
+<li><strong>face_descriptor</strong>: String (Optional) - Base64 encoded face descriptor for face recognition</li>
 <li><strong>created_at</strong>: DateTime</li>
 <li><strong>updated_at</strong>: DateTime</li>
 </ul>
@@ -313,9 +408,11 @@
 <li><strong>item_id</strong>: Foreign Key to Item</li>
 <li><strong>lab_id</strong>: Foreign Key to Lab</li>
 <li><strong>issue_time</strong>: DateTime</li>
-<li><strong>estimated_return_time</strong>: DateTime (Optional) - <strong>NEW FIELD</strong></li>
+<li><strong>estimated_return_time</strong>: DateTime (Optional)</li>
 <li><strong>return_time</strong>: DateTime (Optional)</li>
-<li><strong>notification_sent</strong>: Boolean (Default: false) - <strong>NEW FIELD</strong></li>
+<li><strong>notification_sent</strong>: Boolean (Default: false)</li>
+<li><strong>issue_verification_status</strong>: Enum (VERIFIED, FAILED, PENDING) - Face verification status when item was issued</li>
+<li><strong>return_verification_status</strong>: Enum (VERIFIED, FAILED, PENDING) (Optional) - Face verification status when item was returned</li>
 <li><strong>created_at</strong>: DateTime</li>
 <li><strong>updated_at</strong>: DateTime</li>
 </ul>
@@ -374,6 +471,13 @@
 <td>❌</td>
 </tr>
 <tr>
+<td>Create User</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
 <td>Assign Admin to Lab</td>
 <td>✅</td>
 <td>❌</td>
@@ -395,6 +499,27 @@
 <td>❌</td>
 </tr>
 <tr>
+<td>View All Users</td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View All Items</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>System Reports</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
 <td>View My Labs</td>
 <td>❌</td>
 <td>✅</td>
@@ -409,6 +534,55 @@
 <td>❌</td>
 </tr>
 <tr>
+<td>Edit Lab Admin</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Delete Lab Admin</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View Lab Admins</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Create User</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Edit User</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Delete User</td>
+<td>❌</td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>View Users</td>
+<td>❌</td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
 <td>View Lab Reports</td>
 <td>❌</td>
 <td>✅</td>
@@ -417,13 +591,6 @@
 </tr>
 <tr>
 <td>Manage Items</td>
-<td>❌</td>
-<td>❌</td>
-<td>✅</td>
-<td>❌</td>
-</tr>
-<tr>
-<td>Create User</td>
 <td>❌</td>
 <td>❌</td>
 <td>✅</td>
@@ -504,12 +671,24 @@
         SA7[DELETE /api/super-admin/delete-admin/:adminId]
         SA8[PUT /api/super-admin/edit-lab/:labId]
         SA9[DELETE /api/super-admin/delete-lab/:labId]
+        SA10[GET /api/super-admin/users]
+        SA11[POST /api/super-admin/create-user]
+        SA12[GET /api/super-admin/items]
+        SA13[GET /api/super-admin/reports&lt;br/&gt;?adminId=xxx or ?labId=xxx]
     end
     
     subgraph "Admin"
         AD1[GET /api/admin/labs]
         AD2[POST /api/admin/create-lab-admin]
-        AD3[GET /api/admin/reports/:labId]
+        AD3[POST /api/admin/create-user]
+        AD4[GET /api/admin/users]
+        AD5[PUT /api/admin/edit-user/:userId]
+        AD6[DELETE /api/admin/delete-user/:userId]
+        AD7[GET /api/admin/lab-admins]
+        AD8[GET /api/admin/lab-admins/:labId]
+        AD9[PUT /api/admin/edit-lab-admin/:labAdminId]
+        AD10[DELETE /api/admin/delete-lab-admin/:labAdminId]
+        AD11[GET /api/admin/reports/:labId]
     end
     
     subgraph "Lab Admin"
@@ -518,19 +697,25 @@
         LA3[PUT /api/lab-admin/items/:itemId]
         LA4[DELETE /api/lab-admin/items/:itemId]
         LA5[GET /api/lab-admin/users]
-        LA6[POST /api/lab-admin/create-user]
-        LA7[POST /api/lab-admin/issue&lt;br/&gt;with estimatedReturnTime]
-        LA8[POST /api/lab-admin/return/:issueRecordId]
-        LA9[GET /api/lab-admin/issue-history]
-        LA10[GET /api/lab-admin/stats]
+        LA6[POST /api/lab-admin/issue&lt;br/&gt;with estimatedReturnTime]
+        LA7[POST /api/lab-admin/return/:issueRecordId]
+        LA8[GET /api/lab-admin/issue-history]
+        LA9[GET /api/lab-admin/stats]
     end
     
     subgraph "User"
         U1[GET /api/user/items]
-        U2[POST /api/user/request-issue/:itemId]
+        U2[POST /api/user/issue/:itemId&lt;br/&gt;with liveImage &amp; faceDescriptor]
         U3[GET /api/user/issued-items]
-        U4[POST /api/user/return/:issueRecordId]
+        U4[POST /api/user/return/:issueRecordId&lt;br/&gt;with liveImage &amp; faceDescriptor]
         U5[GET /api/user/stats]
+    end
+    
+    subgraph "Face Recognition"
+        FR1[GET /api/face-recognition/health]
+        FR2[POST /api/face-recognition/detect]
+        FR3[POST /api/face-recognition/verify]
+        FR4[POST /api/face-recognition/compare]
     end
     
     subgraph "System Services"
@@ -592,27 +777,107 @@
     SKIP --&gt; NEXT
     NEXT --&gt;|Yes| LOOP
     NEXT --&gt;|No| END
-</div><h2 id="9-issue-item-flow-with-estimated-return-time">9. Issue Item Flow with Estimated Return Time </h2>
+</div><h2 id="9-issue-item-flow-with-face-verification">9. Issue Item Flow with Face Verification </h2>
 <div class="mermaid">sequenceDiagram
-    participant LA as Lab Admin
+    participant U as User
     participant FE as Frontend
     participant API as API Server
+    participant FR as Face Recognition Service
+    participant PY as Python Service
     participant DB as Database
     participant OC as Overdue Checker
     
-    LA-&gt;&gt;FE: Select Item &amp; User&lt;br/&gt;Set Estimated Return Time
-    FE-&gt;&gt;API: POST /api/lab-admin/issue&lt;br/&gt;{itemId, userId, estimatedReturnTime}
-    API-&gt;&gt;DB: Create Issue Record&lt;br/&gt;(with estimated_return_time)
-    API-&gt;&gt;DB: Update Item Status = ISSUED
-    DB--&gt;&gt;API: Success
-    API--&gt;&gt;FE: Item Issued Successfully
-    FE--&gt;&gt;LA: Confirmation
+    U-&gt;&gt;FE: Select Item &amp; Set Return Time
+    FE-&gt;&gt;FE: Open Face Scan Component
+    FE-&gt;&gt;PY: Capture Live Face Image
+    PY-&gt;&gt;PY: Detect Face &amp; Extract Encoding
+    PY--&gt;&gt;FE: Face Descriptor &amp; Live Image
+    FE-&gt;&gt;API: POST /api/user/issue/:itemId&lt;br/&gt;{liveImage, faceDescriptor, estimatedReturnTime}
+    API-&gt;&gt;DB: Fetch User's Registered Face Data
+    DB--&gt;&gt;API: User imageUrl &amp; faceDescriptor
+    API-&gt;&gt;FR: Verify Face (liveImage vs registered)
+    FR-&gt;&gt;PY: POST /verify-face
+    PY-&gt;&gt;PY: Compare Face Encodings
+    PY--&gt;&gt;FR: Verification Result (is_match, distance)
+    FR--&gt;&gt;API: Verification Status
+    alt Face Matches
+        API-&gt;&gt;DB: Create Issue Record&lt;br/&gt;(with issue_verification_status = VERIFIED)
+        API-&gt;&gt;DB: Update Item Status = ISSUED
+        DB--&gt;&gt;API: Success
+        API--&gt;&gt;FE: Item Issued Successfully
+        FE--&gt;&gt;U: Confirmation with Verification Status
+    else Face Does Not Match
+        API--&gt;&gt;FE: 403 Forbidden&lt;br/&gt;Face Verification Failed
+        FE--&gt;&gt;U: Error: Unauthorized User
+    end
     
     Note over OC: Cron Job Runs Every Hour
     OC-&gt;&gt;DB: Check for Overdue Items
     DB--&gt;&gt;OC: Found Overdue Item
     OC-&gt;&gt;OC: Send Email Notifications
     OC-&gt;&gt;DB: Mark notification_sent = true
+</div><h2 id="91-user-registration-with-face-scanning">9.1. User Registration with Face Scanning </h2>
+<div class="mermaid">sequenceDiagram
+    participant A as Admin/Super Admin
+    participant FE as Frontend
+    participant API as API Server
+    participant FR as Face Recognition Service
+    participant PY as Python Service
+    participant DB as Database
+    
+    A-&gt;&gt;FE: Create User Form
+    FE-&gt;&gt;FE: Open Face Scan Component
+    FE-&gt;&gt;PY: Capture User Face Image
+    PY-&gt;&gt;PY: Detect Face &amp; Extract Encoding
+    PY--&gt;&gt;FE: Face Descriptor &amp; Captured Image (base64)
+    FE-&gt;&gt;API: POST /api/admin/create-user&lt;br/&gt;{name, email, password, labId,&lt;br/&gt;faceImage, faceDescriptor}
+    API-&gt;&gt;DB: Store User with faceImage &amp; faceDescriptor
+    DB--&gt;&gt;API: User Created
+    API--&gt;&gt;FE: User Created Successfully
+    FE--&gt;&gt;A: Confirmation
+</div><h2 id="92-face-verification-flow-diagram">9.2. Face Verification Flow Diagram </h2>
+<div class="mermaid">flowchart TD
+    START([User Action: Issue/Return Item]) --&gt; CHECK_FACE_DATA{User Has&lt;br/&gt;Registered Face?}
+    
+    CHECK_FACE_DATA --&gt;|No| ERROR_NO_FACE[Error: Face Registration Required&lt;br/&gt;Please register face first]
+    CHECK_FACE_DATA --&gt;|Yes| OPEN_CAMERA[Open Camera&lt;br/&gt;FaceScanPython Component]
+    
+    OPEN_CAMERA --&gt; CAPTURE[Capture Live Face Image]
+    CAPTURE --&gt; DETECT[Python Service: Detect Face]
+    DETECT --&gt; FACE_FOUND{Face Detected?}
+    
+    FACE_FOUND --&gt;|No| ERROR_NO_DETECT[Error: No Face Detected&lt;br/&gt;Please position face in frame]
+    FACE_FOUND --&gt;|Multiple| ERROR_MULTIPLE[Error: Multiple Faces Detected&lt;br/&gt;Only one person allowed]
+    FACE_FOUND --&gt;|Yes| EXTRACT[Extract Face Encoding/Descriptor]
+    
+    EXTRACT --&gt; SEND_BACKEND[Send to Backend&lt;br/&gt;liveImage + faceDescriptor]
+    SEND_BACKEND --&gt; FETCH_REGISTERED[Backend: Fetch User's&lt;br/&gt;Registered Face Data]
+    
+    FETCH_REGISTERED --&gt; VERIFY[Python Service: Verify Face&lt;br/&gt;Compare Live vs Registered]
+    VERIFY --&gt; CALCULATE[Calculate Distance&lt;br/&gt;Compare with Threshold 0.65]
+    
+    CALCULATE --&gt; MATCH{Distance &lt; Threshold?}
+    
+    MATCH --&gt;|Yes| VERIFIED[Verification: VERIFIED&lt;br/&gt;Distance &lt; 0.65]
+    MATCH --&gt;|No| FAILED[Verification: FAILED&lt;br/&gt;Distance &gt;= 0.65]
+    
+    VERIFIED --&gt; ALLOW[Allow Action&lt;br/&gt;Issue/Return Item]
+    ALLOW --&gt; STORE_STATUS[Store Verification Status&lt;br/&gt;in IssueRecord]
+    STORE_STATUS --&gt; SUCCESS[Action Successful&lt;br/&gt;Show Success Message]
+    
+    FAILED --&gt; BLOCK[Block Action&lt;br/&gt;403 Forbidden]
+    BLOCK --&gt; ERROR_MSG[Show Error Message&lt;br/&gt;Face Verification Failed&lt;br/&gt;Unauthorized User]
+    
+    ERROR_NO_FACE --&gt; END([End])
+    ERROR_NO_DETECT --&gt; OPEN_CAMERA
+    ERROR_MULTIPLE --&gt; OPEN_CAMERA
+    ERROR_MSG --&gt; END
+    SUCCESS --&gt; END
+    
+    style VERIFIED fill:#c8e6c9
+    style FAILED fill:#ffcdd2
+    style SUCCESS fill:#c8e6c9
+    style ERROR_MSG fill:#ffcdd2
 </div><h2 id="10-data-flow-diagram---updated">10. Data Flow Diagram - Updated </h2>
 <div class="mermaid">sequenceDiagram
     participant U as User
@@ -631,16 +896,20 @@
     A--&gt;&gt;F: Token + User Data
     F--&gt;&gt;U: Redirect to Dashboard
     
-    U-&gt;&gt;F: Issue Item with Estimated Return Time
-    F-&gt;&gt;A: API Request + Token&lt;br/&gt;{itemId, userId, estimatedReturnTime}
+    U-&gt;&gt;F: Issue Item with Face Verification
+    F-&gt;&gt;F: Capture Live Face Image
+    F-&gt;&gt;A: API Request + Token&lt;br/&gt;{itemId, estimatedReturnTime,&lt;br/&gt;liveImage, faceDescriptor}
     A-&gt;&gt;M: Authenticate Token
-    M-&gt;&gt;M: Verify Role (LAB_ADMIN)
+    M-&gt;&gt;M: Verify Role (USER)
     M--&gt;&gt;A: Authorized
-    A-&gt;&gt;D: Create Issue Record&lt;br/&gt;(with estimated_return_time)
+    A-&gt;&gt;D: Fetch User's Registered Face
+    D--&gt;&gt;A: User Face Data
+    A-&gt;&gt;A: Verify Face (Backend Verification)
+    A-&gt;&gt;D: Create Issue Record&lt;br/&gt;(with issue_verification_status)
     A-&gt;&gt;D: Update Item Status
     D--&gt;&gt;A: Success
-    A--&gt;&gt;F: Response
-    F--&gt;&gt;U: Item Issued
+    A--&gt;&gt;F: Response with Verification Status
+    F--&gt;&gt;U: Item Issued (VERIFIED/FAILED)
     
     Note over C: Every Hour
     C-&gt;&gt;D: Query Overdue Items
@@ -655,8 +924,9 @@
         LOGIN_PAGE[Login Page]
         DASHBOARDS[Dashboards&lt;br/&gt;Role-Based]
         FORMS[Forms&lt;br/&gt;Create/Edit&lt;br/&gt;with DateTime Picker]
-        TABLES[Tables&lt;br/&gt;Data Display&lt;br/&gt;with Overdue Indicators]
+        TABLES[Tables&lt;br/&gt;Data Display&lt;br/&gt;with Overdue Indicators&lt;br/&gt;Verification Status]
         SIDEBAR[Sidebar Navigation]
+        FACE_SCAN[FaceScanPython Component&lt;br/&gt;Camera &amp; Face Detection]
     end
     
     subgraph "Backend Services"
@@ -666,8 +936,13 @@
         LAB_SERVICE[Lab Management]
         ITEM_SERVICE[Item Management]
         ISSUE_SERVICE[Issue Management]
+        FACE_SERVICE[Face Recognition Service&lt;br/&gt;Node.js Intermediary]
         EMAIL_SERVICE[Email Service&lt;br/&gt;Nodemailer]
         OVERDUE_SERVICE[Overdue Checker Service&lt;br/&gt;Cron Job]
+    end
+    
+    subgraph "Python Service"
+        PYTHON_FACE[Python Flask Service&lt;br/&gt;Face Detection &amp; Verification]
     end
     
     subgraph "Middleware"
@@ -701,6 +976,7 @@
     LAB_SERVICE --&gt; AUTHORIZE_MW
     ITEM_SERVICE --&gt; AUTHORIZE_MW
     ISSUE_SERVICE --&gt; AUTHORIZE_MW
+    FACE_SERVICE --&gt; AUTHORIZE_MW
     
     AUTH_MW --&gt; RBAC_SERVICE
     AUTHORIZE_MW --&gt; RBAC_SERVICE
@@ -710,6 +986,7 @@
     ITEM_SERVICE --&gt; PRISMA_CLIENT
     ISSUE_SERVICE --&gt; PRISMA_CLIENT
     OVERDUE_SERVICE --&gt; PRISMA_CLIENT
+    FACE_SERVICE --&gt; PRISMA_CLIENT
     
     USER_SERVICE --&gt; MONGOOSE
     LAB_SERVICE --&gt; MONGOOSE
@@ -717,12 +994,15 @@
     ISSUE_SERVICE --&gt; MONGOOSE
     OVERDUE_SERVICE --&gt; MONGOOSE
     
+    FACE_SERVICE --&gt; PYTHON_FACE
+    ISSUE_SERVICE --&gt; FACE_SERVICE
+    
     OVERDUE_SERVICE --&gt; EMAIL_SERVICE
     EMAIL_SERVICE --&gt; SMTP_SERVER
     
     PRISMA_CLIENT --&gt; MONGO
     MONGOOSE --&gt; MONGO
-</div><h2 id="12-authentication--authorization-flow">12. Authentication &amp; Authorization Flow </h2>
+</div><h2 id="13-authentication--authorization-flow">13. Authentication &amp; Authorization Flow </h2>
 <div class="mermaid">flowchart TD
     START([User Request]) --&gt; CHECK_TOKEN{Token Present?}
     CHECK_TOKEN --&gt;|No| REJECT[401 Unauthorized]
@@ -750,15 +1030,15 @@
     ALLOW_AD --&gt; PROCESS
     ALLOW_LA --&gt; PROCESS
     ALLOW_U --&gt; PROCESS
-</div><h2 id="13-issuereturn-workflow-with-overdue-tracking">13. Issue/Return Workflow with Overdue Tracking </h2>
+</div><h2 id="14-issuereturn-workflow-with-overdue-tracking">14. Issue/Return Workflow with Overdue Tracking </h2>
 <div class="mermaid">stateDiagram-v2
     [*] --&gt; Available: Item Created
     
-    Available --&gt; Issued: Lab Admin Issues Item&lt;br/&gt;Sets estimated_return_time
+    Available --&gt; Issued: User/Lab Admin Issues Item&lt;br/&gt;Face Verification Required&lt;br/&gt;Sets estimated_return_time&lt;br/&gt;issue_verification_status = VERIFIED/FAILED
     Issued --&gt; Overdue: estimated_return_time Passed&lt;br/&gt;notification_sent = false
     Overdue --&gt; Overdue: Email Sent&lt;br/&gt;notification_sent = true
-    Overdue --&gt; Available: User/Lab Admin Returns Item
-    Issued --&gt; Available: User/Lab Admin Returns Item&lt;br/&gt;(Before Due Date)
+    Overdue --&gt; Available: User/Lab Admin Returns Item&lt;br/&gt;Face Verification Required&lt;br/&gt;return_verification_status = VERIFIED/FAILED
+    Issued --&gt; Available: User/Lab Admin Returns Item&lt;br/&gt;(Before Due Date)&lt;br/&gt;Face Verification Required&lt;br/&gt;return_verification_status = VERIFIED/FAILED
     Available --&gt; Maintenance: Lab Admin Sets Maintenance
     Maintenance --&gt; Available: Lab Admin Sets Available
     
@@ -770,6 +1050,7 @@
     note right of Issued
         Item is with user
         estimated_return_time set
+        issue_verification_status recorded
         System monitors for overdue
     end note
     
@@ -784,7 +1065,7 @@
         Item is being
         repaired/maintained
     end note
-</div><h2 id="14-complete-system-overview">14. Complete System Overview </h2>
+</div><h2 id="15-complete-system-overview">15. Complete System Overview </h2>
 <div class="mermaid">graph TB
     subgraph "User Interface Layer"
         UI[React Frontend&lt;br/&gt;- Login&lt;br/&gt;- Dashboards&lt;br/&gt;- Forms&lt;br/&gt;- Tables&lt;br/&gt;- Overdue Indicators]
@@ -798,9 +1079,14 @@
         BL1[User Management]
         BL2[Lab Management]
         BL3[Item Management]
-        BL4[Issue Management]
+        BL4[Issue Management&lt;br/&gt;with Face Verification]
         BL5[Email Notification]
         BL6[Overdue Monitoring]
+        BL7[Face Recognition Service]
+    end
+    
+    subgraph "Face Recognition Layer"
+        PYTHON_SVC[Python Flask Service&lt;br/&gt;Face Detection &amp; Verification]
     end
     
     subgraph "Data Persistence Layer"
@@ -821,11 +1107,16 @@
     REST --&gt; BL2
     REST --&gt; BL3
     REST --&gt; BL4
+    REST --&gt; BL7
     
     BL1 --&gt; DB
     BL2 --&gt; DB
     BL3 --&gt; DB
     BL4 --&gt; DB
+    BL7 --&gt; DB
+    
+    BL4 --&gt; BL7
+    BL7 --&gt; PYTHON_SVC
     
     CRON --&gt; BL6
     BL6 --&gt; DB
@@ -834,7 +1125,7 @@
     EMAIL --&gt; SMTP
     
     BL4 --&gt; BL5
-</div><h2 id="15-project-flow-diagram">15. Project Flow Diagram </h2>
+</div><h2 id="16-project-flow-diagram">16. Project Flow Diagram </h2>
 <div class="mermaid">flowchart TD
     START([Project Start]) --&gt; INIT[System Initialization]
     
@@ -876,28 +1167,60 @@
         SA_DELETE_ADMIN --&gt; SA_DASH
         SA_EDIT_LAB --&gt; SA_DASH
         SA_DELETE_LAB --&gt; SA_DASH
+        
+        SA_DASH --&gt; SA_CREATE_USER[Create User]
+        SA_DASH --&gt; SA_VIEW_USERS[View All Users]
+        SA_DASH --&gt; SA_VIEW_ITEMS[View All Items&lt;br/&gt;with Status &amp; Lab Info]
+        SA_DASH --&gt; SA_REPORTS[System Reports]
+        
+        SA_CREATE_USER --&gt; SA_DASH
+        SA_VIEW_USERS --&gt; SA_DASH
+        SA_VIEW_ITEMS --&gt; SA_DASH
+        
+        SA_REPORTS --&gt; SA_OVERVIEW[System Overview&lt;br/&gt;All Admins, Labs, Users,&lt;br/&gt;Lab Admins, Items with States, Issues]
+        SA_REPORTS --&gt; SA_ADMIN_REPORT[Admin Report]
+        SA_REPORTS --&gt; SA_LAB_REPORT[Lab Report]
+        SA_OVERVIEW --&gt; SA_DASH
+        SA_ADMIN_REPORT --&gt; SA_DASH
+        SA_LAB_REPORT --&gt; SA_DASH
     end
     
     subgraph "Admin Flow"
         AD_FLOW --&gt; AD_DASH[Admin Dashboard]
         AD_DASH --&gt; AD_VIEW_LABS[View My Labs]
         AD_DASH --&gt; AD_CREATE_LA[Create Lab Admin]
+        AD_DASH --&gt; AD_CREATE_USER[Create User]
+        AD_DASH --&gt; AD_VIEW_USERS[View Users]
+        AD_DASH --&gt; AD_VIEW_LA[View Lab Admins]
         AD_DASH --&gt; AD_REPORTS[View Lab Reports]
         
         AD_VIEW_LABS --&gt; AD_DASH
         AD_CREATE_LA --&gt; AD_DASH
+        AD_CREATE_USER --&gt; AD_DASH
+        
+        AD_VIEW_USERS --&gt; AD_EDIT_USER[Edit User]
+        AD_VIEW_USERS --&gt; AD_DELETE_USER[Delete User]
+        AD_EDIT_USER --&gt; AD_DASH
+        AD_DELETE_USER --&gt; AD_DASH
+        
+        AD_VIEW_LA --&gt; AD_EDIT_LA[Edit Lab Admin]
+        AD_VIEW_LA --&gt; AD_DELETE_LA[Delete Lab Admin]
+        AD_EDIT_LA --&gt; AD_DASH
+        AD_DELETE_LA --&gt; AD_DASH
+        
         AD_REPORTS --&gt; AD_DASH
     end
     
     subgraph "Lab Admin Flow"
         LA_FLOW --&gt; LA_DASH[Lab Admin Dashboard]
         LA_DASH --&gt; LA_MANAGE_ITEMS[Manage Items&lt;br/&gt;Add/Edit/Delete]
-        LA_DASH --&gt; LA_CREATE_USER[Create User Account]
+        LA_DASH --&gt; LA_VIEW_USERS[View Users&lt;br/&gt;Read-Only]
         LA_DASH --&gt; LA_ISSUE[Issue Items to Users&lt;br/&gt;Set Estimated Return Time]
         LA_DASH --&gt; LA_HISTORY[View Issue History&lt;br/&gt;Mark Returns]
         
         LA_MANAGE_ITEMS --&gt; LA_DASH
-        LA_CREATE_USER --&gt; LA_DASH
+        LA_VIEW_USERS --&gt; LA_DASH
+        
         LA_ISSUE --&gt; LA_DASH
         LA_HISTORY --&gt; LA_DASH
     end
@@ -907,16 +1230,27 @@
         U_DASH --&gt; U_VIEW_ITEMS[View Available Items]
         U_DASH --&gt; U_MY_ITEMS[My Issued Items&lt;br/&gt;Check Overdue Status]
         
-        U_VIEW_ITEMS --&gt; U_REQUEST[Request Item Issue]
-        U_REQUEST --&gt; U_DASH
+        U_VIEW_ITEMS --&gt; U_SELECT_ITEM[Select Item]
+        U_SELECT_ITEM --&gt; U_SET_RETURN_TIME[Set Estimated Return Time]
+        U_SET_RETURN_TIME --&gt; U_FACE_SCAN_ISSUE[Face Verification&lt;br/&gt;Scan Live Face]
+        U_FACE_SCAN_ISSUE --&gt; U_VERIFY_ISSUE{Face Matches?}
+        U_VERIFY_ISSUE --&gt;|Yes| U_ISSUE_SUCCESS[Item Issued&lt;br/&gt;Verification: VERIFIED]
+        U_VERIFY_ISSUE --&gt;|No| U_ISSUE_FAIL[Issue Failed&lt;br/&gt;Verification: FAILED]
+        U_ISSUE_SUCCESS --&gt; U_DASH
+        U_ISSUE_FAIL --&gt; U_DASH
         
         U_MY_ITEMS --&gt; U_CHECK_OVERDUE{Item Overdue?}
-        U_CHECK_OVERDUE --&gt;|Yes| U_OVERDUE_WARNING[Display Overdue Warning]
-        U_CHECK_OVERDUE --&gt;|No| U_NORMAL[Display Normal Status]
+        U_CHECK_OVERDUE --&gt;|Yes| U_OVERDUE_WARNING[Display Overdue Warning&lt;br/&gt;Show Verification Status]
+        U_CHECK_OVERDUE --&gt;|No| U_NORMAL[Display Normal Status&lt;br/&gt;Show Verification Status]
         
         U_OVERDUE_WARNING --&gt; U_RETURN[Return Item]
         U_NORMAL --&gt; U_RETURN
-        U_RETURN --&gt; U_DASH
+        U_RETURN --&gt; U_FACE_SCAN_RETURN[Face Verification&lt;br/&gt;Scan Live Face]
+        U_FACE_SCAN_RETURN --&gt; U_VERIFY_RETURN{Face Matches&lt;br/&gt;Original Issuer?}
+        U_VERIFY_RETURN --&gt;|Yes| U_RETURN_SUCCESS[Item Returned&lt;br/&gt;Verification: VERIFIED]
+        U_VERIFY_RETURN --&gt;|No| U_RETURN_FAIL[Return Failed&lt;br/&gt;Verification: FAILED]
+        U_RETURN_SUCCESS --&gt; U_DASH
+        U_RETURN_FAIL --&gt; U_DASH
     end
     
     subgraph "Background Processes"
@@ -938,11 +1272,16 @@
     CREATE_RECORD --&gt; UPDATE_ITEM_STATUS[Update Item Status = ISSUED]
     UPDATE_ITEM_STATUS --&gt; MONITOR[System Monitors for Overdue]
     
+    U_FACE_SCAN_ISSUE --&gt; CREATE_RECORD_USER[Create Issue Record&lt;br/&gt;with issue_verification_status]
+    CREATE_RECORD_USER --&gt; UPDATE_ITEM_STATUS_USER[Update Item Status = ISSUED]
+    UPDATE_ITEM_STATUS_USER --&gt; MONITOR
+    
     MONITOR --&gt; CHECK_OVERDUE
     
-    U_RETURN --&gt; RETURN_PROCESS[Return Process]
+    U_RETURN --&gt; RETURN_PROCESS[Return Process&lt;br/&gt;with Face Verification]
     LA_HISTORY --&gt; RETURN_PROCESS
-    RETURN_PROCESS --&gt; UPDATE_RETURN_TIME[Update return_time in Record]
+    RETURN_PROCESS --&gt; VERIFY_RETURN_FACE[Verify Face Matches Original Issuer]
+    VERIFY_RETURN_FACE --&gt; UPDATE_RETURN_TIME[Update return_time &amp;&lt;br/&gt;return_verification_status in Record]
     UPDATE_RETURN_TIME --&gt; UPDATE_ITEM_AVAILABLE[Update Item Status = AVAILABLE]
     UPDATE_ITEM_AVAILABLE --&gt; U_DASH
     UPDATE_ITEM_AVAILABLE --&gt; LA_DASH
@@ -969,13 +1308,53 @@
 </ul>
 <h3 id="key-updates-in-this-version">Key Updates in This Version: </h3>
 <ol>
-<li><strong>Email Notification System</strong>: Added email service and SMTP integration</li>
-<li><strong>Overdue Checker Service</strong>: Added cron job for automatic overdue detection</li>
-<li><strong>Estimated Return Time</strong>: New field in IssueRecord for tracking expected return dates</li>
-<li><strong>Notification Tracking</strong>: <code>notification_sent</code> field to prevent duplicate emails</li>
-<li><strong>Updated User Flows</strong>: Include estimated return time setting and overdue indicators</li>
-<li><strong>Updated ERD</strong>: Includes new fields (<code>estimated_return_time</code>, <code>notification_sent</code>)</li>
-<li><strong>New API Endpoints</strong>: Manual trigger for overdue check and test email endpoint</li>
+<li>
+<p><strong>Face Recognition System</strong>:</p>
+<ul>
+<li>Python Flask service for face detection and verification</li>
+<li>Face scanning during user registration</li>
+<li>Face verification required for item issue and return</li>
+<li>Face verification status tracking (VERIFIED, FAILED, PENDING)</li>
+<li>Base64 image storage in database</li>
+<li>Face descriptor storage for faster verification</li>
+</ul>
+</li>
+<li>
+<p><strong>Email Notification System</strong>: Added email service and SMTP integration</p>
+</li>
+<li>
+<p><strong>Overdue Checker Service</strong>: Added cron job for automatic overdue detection</p>
+</li>
+<li>
+<p><strong>Estimated Return Time</strong>: New field in IssueRecord for tracking expected return dates</p>
+</li>
+<li>
+<p><strong>Notification Tracking</strong>: <code>notification_sent</code> field to prevent duplicate emails</p>
+</li>
+<li>
+<p><strong>Updated User Flows</strong>:</p>
+<ul>
+<li>Users can issue items themselves with face verification</li>
+<li>Face verification required for both issue and return</li>
+<li>Verification status displayed in issue history</li>
+</ul>
+</li>
+<li>
+<p><strong>Updated ERD</strong>: Includes new fields:</p>
+<ul>
+<li><code>image_url</code> and <code>face_descriptor</code> in User model</li>
+<li><code>issue_verification_status</code> and <code>return_verification_status</code> in IssueRecord model</li>
+<li><code>estimated_return_time</code>, <code>notification_sent</code></li>
+</ul>
+</li>
+<li>
+<p><strong>New API Endpoints</strong>:</p>
+<ul>
+<li>Face recognition endpoints (<code>/api/face-recognition/*</code>)</li>
+<li>Updated user issue endpoint with face verification</li>
+<li>Updated return endpoint with face verification</li>
+</ul>
+</li>
 </ol>
 <h3 id="system-features">System Features: </h3>
 <ul>
@@ -983,9 +1362,12 @@
 <li><strong>Direct MongoDB operations</strong> (via Mongoose) for create/update to avoid transaction requirements</li>
 <li><strong>JWT tokens</strong> for authentication with 7-day expiration</li>
 <li><strong>Role-based access control</strong> enforced at middleware level</li>
+<li><strong>Face Recognition</strong>: Python-based service for secure face verification</li>
+<li><strong>User Self-Service</strong>: Users can issue items themselves after face verification</li>
 <li><strong>Automatic overdue detection</strong> via cron job (runs every hour)</li>
 <li><strong>Email notifications</strong> sent to both users and lab admins for overdue items</li>
 <li><strong>Data consistency checks</strong> and automatic fixes in overdue checker</li>
+<li><strong>Verification Status Tracking</strong>: Complete audit trail of face verification for all issue and return operations</li>
 </ul>
 
       </div>
@@ -1009,7 +1391,7 @@ mermaid.initialize(MERMAID_CONFIG || {})
 if (typeof(window['Reveal']) !== 'undefined') {
   function mermaidRevealHelper(event) {
     var currentSlide = event.currentSlide
-    var diagrams = currentSlide.querySelectorAll('.mermaid')
+    var diagrams = currentSlide.querySelectorAll('div.mermaid')
     for (var i = 0; i < diagrams.length; i++) {
       var diagram = diagrams[i]
       if (!diagram.hasAttribute('data-processed')) {
@@ -1022,11 +1404,11 @@ if (typeof(window['Reveal']) !== 'undefined') {
   Reveal.addEventListener('slidetransitionend', mermaidRevealHelper)
   Reveal.addEventListener('ready', mermaidRevealHelper)
   await mermaid.run({
-    nodes: document.querySelectorAll('.mermaid')
+    nodes: document.querySelectorAll('div.mermaid')
   })
 } else {
   await mermaid.run({
-    nodes: document.querySelectorAll('.mermaid')
+    nodes: document.querySelectorAll('div.mermaid')
   })
 }
 </script>

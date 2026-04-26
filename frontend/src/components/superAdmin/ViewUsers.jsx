@@ -37,7 +37,7 @@ const ViewUsers = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">All Users</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white-800">All Users</h2>
       
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">

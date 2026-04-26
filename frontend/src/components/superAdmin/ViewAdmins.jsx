@@ -80,7 +80,7 @@ const ViewAdmins = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">All Admins</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white-800">All Admins</h2>
       
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -116,7 +116,7 @@ const ViewAdmins = () => {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-2 py-1 border border-gray-300 rounded bg-white text-black"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -124,7 +124,7 @@ const ViewAdmins = () => {
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-2 py-1 border border-gray-300 rounded bg-white text-black"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -199,7 +199,7 @@ const ViewAdmins = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black"
                   required
                 />
               </div>
@@ -211,7 +211,7 @@ const ViewAdmins = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black"
                   required
                 />
               </div>
@@ -223,7 +223,7 @@ const ViewAdmins = () => {
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black"
                 />
               </div>
               <div className="flex gap-2 justify-end">

@@ -33,3 +33,24 @@ Thumbs.db
 coverage/
 .nyc_output/
 
+# Runtime uploads / user-provided images
+backend/uploads/
+
+# Generated documentation artifacts / exports
+docs/diagram-exports/
+docs/diagram-exports/**
+docs/*.html
+FlightApp-API-Docs.html
+FlightApp-API-Docs.md
+docs/PSG_Major_Project_Report.docx
+
+# Python cache (face_recognition_service, scripts)
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Local reports/exports (optional)
+*.png
+*.docx
+

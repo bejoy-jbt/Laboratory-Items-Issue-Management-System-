@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CreateLab = ({ onSuccess }) => {
+  const lettersAndSpacesOnly = (value) => value.replace(/[^a-zA-Z\s]/g, '');
+
   const [formData, setFormData] = useState({
     name: '',
     department: '',
@@ -64,7 +66,7 @@ const CreateLab = ({ onSuccess }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Lab</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white-800">Create Lab</h2>
       <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (
@@ -82,10 +84,12 @@ const CreateLab = ({ onSuccess }) => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: lettersAndSpacesOnly(e.target.value) })
+              }
               required
               placeholder="Enter lab name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -93,10 +97,12 @@ const CreateLab = ({ onSuccess }) => {
             <input
               type="text"
               value={formData.department}
-              onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, department: lettersAndSpacesOnly(e.target.value) })
+              }
               required
               placeholder="Enter department name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -106,7 +112,7 @@ const CreateLab = ({ onSuccess }) => {
               onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
               required
               disabled={loadingAdmins || admins.length === 0}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
             >
               <option value="">
                 {loadingAdmins ? 'Loading admins...' : admins.length === 0 ? 'No admins available' : 'Select an admin'}

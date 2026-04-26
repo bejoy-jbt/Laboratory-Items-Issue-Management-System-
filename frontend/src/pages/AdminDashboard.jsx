@@ -33,20 +33,20 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen font-display">
       <Sidebar currentPage={currentPage} />
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-6 md:p-8">
         <Routes>
           <Route
             index
             element={
               <div>
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight mb-6 text-slate-100">Admin Dashboard</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <StatCard
                     title="My Labs"
                     value={stats.totalLabs}
-                    icon={<span className="text-white text-2xl">🏢</span>}
+                    icon={<span className="text-2xl">🏢</span>}
                     color="blue"
                   />
                 </div>

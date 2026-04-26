@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, authorize } from '../middleware/auth.middleware.js';
+import upload from '../middleware/upload.middleware.js';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
@@ -256,10 +257,14 @@ router.get('/lab-admins/:labId', async (req, res) => {
 // Create User
 router.post('/create-user', async (req, res) => {
   try {
-    const { name, email, password, labId } = req.body;
+    const { name, email, password, labId, faceDescriptor, faceImage } = req.body;
 
     if (!name || !email || !password || !labId) {
       return res.status(400).json({ message: 'Name, email, password, and labId are required' });
+    }
+
+    if (!faceImage) {
+      return res.status(400).json({ message: 'Face image is required. Please scan your face for verification.' });
     }
 
     // Verify that the lab is assigned to this admin
@@ -286,6 +291,10 @@ router.post('/create-user', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Store face image as base64 string in image_url field
+    // faceImage is already a base64 string from the frontend
+    const imageUrl = faceImage;
+
     // Create user using MongoDB directly to avoid transaction requirement
     const db = await getMongoConnection();
     const usersCollection = db.collection('users');
@@ -297,6 +306,8 @@ router.post('/create-user', async (req, res) => {
       password: hashedPassword,
       role: 'USER',
       lab_id: new mongoose.Types.ObjectId(labId),
+      image_url: imageUrl, // Store base64 string directly
+      face_descriptor: faceDescriptor || null,
       created_at: now,
       updated_at: now
     };
@@ -313,6 +324,7 @@ router.post('/create-user', async (req, res) => {
         email: true,
         role: true,
         labId: true,
+        imageUrl: true,
         createdAt: true
       }
     });

@@ -28,6 +28,8 @@ model User {
   password  String
   role      Role
   labId     String?  @map("lab_id") @db.ObjectId
+  imageUrl  String?  @map("image_url")
+  faceDescriptor String? @map("face_descriptor") // Base64 encoded face descriptor for face recognition
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -77,6 +79,12 @@ model Item {
   @@map("items")
 }
 
+enum VerificationStatus {
+  VERIFIED
+  FAILED
+  PENDING
+}
+
 model IssueRecord {
   id                String    @id @default(auto()) @map("_id") @db.ObjectId
   userId            String    @map("user_id") @db.ObjectId
@@ -86,6 +94,8 @@ model IssueRecord {
   estimatedReturnTime DateTime? @map("estimated_return_time")
   returnTime        DateTime? @map("return_time")
   notificationSent  Boolean   @default(false) @map("notification_sent")
+  issueVerificationStatus VerificationStatus? @map("issue_verification_status") // Face verification status when item was issued
+  returnVerificationStatus VerificationStatus? @map("return_verification_status") // Face verification status when item was returned
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
 

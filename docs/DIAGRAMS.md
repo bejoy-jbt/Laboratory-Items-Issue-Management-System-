@@ -20,8 +20,14 @@ graph TB
         LA[Lab Admin Routes]
         UR[User Routes]
         AUTH_R[Auth Routes]
+        FR_R[Face Recognition Routes]
         EMAIL_SVC[Email Service<br/>Nodemailer]
         OVERDUE_SVC[Overdue Checker Service<br/>Cron Job]
+    end
+    
+    subgraph "Face Recognition Service"
+        PYTHON_SVC[Python Flask Service<br/>Face Detection & Verification]
+        FACE_API[face_recognition Library]
     end
     
     subgraph "Data Layer"
@@ -31,10 +37,10 @@ graph TB
     end
     
     subgraph "Database Collections"
-        USERS[(Users)]
+        USERS[(Users<br/>with faceDescriptor<br/>and imageUrl)]
         LABS[(Labs)]
         ITEMS[(Items)]
-        RECORDS[(Issue Records<br/>with estimated_return_time<br/>and notification_sent)]
+        RECORDS[(Issue Records<br/>with estimated_return_time,<br/>notification_sent,<br/>issueVerificationStatus,<br/>returnVerificationStatus)]
     end
     
     subgraph "External Services"
@@ -49,16 +55,22 @@ graph TB
     AUTH --> LA
     AUTH --> UR
     AUTH --> AUTH_R
+    AUTH --> FR_R
     
     SA --> PRISMA
     AD --> PRISMA
     LA --> PRISMA
     UR --> PRISMA
     AUTH_R --> PRISMA
+    FR_R --> PRISMA
     
     SA --> MONGOOSE
     AD --> MONGOOSE
     LA --> MONGOOSE
+    UR --> MONGOOSE
+    
+    FR_R --> PYTHON_SVC
+    PYTHON_SVC --> FACE_API
     
     OVERDUE_SVC --> PRISMA
     OVERDUE_SVC --> MONGOOSE
@@ -135,8 +147,9 @@ flowchart TD
     DASH --> CREATE_USER[Create User]
     CREATE_USER --> SELECT_LAB_USER[Select Lab]
     SELECT_LAB_USER --> FORM_USER[Fill User Details]
-    FORM_USER --> SUBMIT_USER[Submit]
-    SUBMIT_USER --> SUCCESS_USER[User Created]
+    FORM_USER --> FACE_SCAN_USER[Scan Face Image<br/>Capture Face Descriptor]
+    FACE_SCAN_USER --> SUBMIT_USER[Submit]
+    SUBMIT_USER --> SUCCESS_USER[User Created<br/>with Face Data]
     SUCCESS_USER --> DASH
     
     DASH --> VIEW_USERS[View All Users]
@@ -181,8 +194,9 @@ flowchart TD
     DASH --> CREATE_USER[Create User]
     CREATE_USER --> SELECT_LAB_USER[Select Lab]
     SELECT_LAB_USER --> FORM_USER[Fill User Details]
-    FORM_USER --> SUBMIT_USER[Submit]
-    SUBMIT_USER --> SUCCESS_USER[User Created]
+    FORM_USER --> FACE_SCAN_USER[Scan Face Image<br/>Capture Face Descriptor]
+    FACE_SCAN_USER --> SUBMIT_USER[Submit]
+    SUBMIT_USER --> SUCCESS_USER[User Created<br/>with Face Data]
     SUCCESS_USER --> DASH
     
     VIEW_LA --> LA_LIST[Display All Lab Admins<br/>Created by Admin<br/>with Lab Information]
@@ -239,9 +253,14 @@ flowchart TD
     SUBMIT_ISSUE --> SUCCESS_ISSUE[Item Issued<br/>Record Created with<br/>estimated_return_time]
     SUCCESS_ISSUE --> DASH
     
-    HISTORY --> VIEW_RECORDS[View All Records<br/>with Overdue Indicators]
-    VIEW_RECORDS --> RETURN[Mark as Returned]
-    RETURN --> UPDATE_STATUS[Update Item Status]
+    HISTORY --> VIEW_RECORDS[View All Records<br/>with Overdue Indicators<br/>Issue & Return Verification Status]
+    VIEW_RECORDS --> RETURN[Mark as Returned<br/>with Face Verification]
+    RETURN --> FACE_VERIFY_RETURN_LA[Face Verification<br/>Scan User's Face]
+    FACE_VERIFY_RETURN_LA --> VERIFY_RETURN_LA{Face Matches?}
+    VERIFY_RETURN_LA -->|Yes| RETURN_SUCCESS_LA[Item Returned<br/>Verification: VERIFIED]
+    VERIFY_RETURN_LA -->|No| RETURN_FAIL_LA[Return Failed<br/>Verification: FAILED]
+    RETURN_SUCCESS_LA --> UPDATE_STATUS[Update Item Status]
+    RETURN_FAIL_LA --> VIEW_RECORDS
 ```
 
 ### 2.4 User Flow
@@ -252,11 +271,17 @@ flowchart TD
     DASH --> VIEW_ITEMS[View Available Items]
     DASH --> MY_ISSUED[My Issued Items]
     
-    VIEW_ITEMS --> REQUEST[Request Item Issue]
-    REQUEST --> NOTIFY[Notify Lab Admin]
+    VIEW_ITEMS --> SELECT_ITEM[Select Item]
+    SELECT_ITEM --> SET_RETURN_TIME[Set Estimated Return Time]
+    SET_RETURN_TIME --> FACE_VERIFY_ISSUE[Face Verification<br/>Scan Live Face]
+    FACE_VERIFY_ISSUE --> VERIFY_MATCH{Face Matches<br/>Registered User?}
+    VERIFY_MATCH -->|Yes| ISSUE_SUCCESS[Item Issued<br/>Verification Status: VERIFIED]
+    VERIFY_MATCH -->|No| VERIFY_FAIL[Verification Failed<br/>Status: FAILED]
+    VERIFY_FAIL --> DASH
+    ISSUE_SUCCESS --> DASH
     
-    MY_ISSUED --> ACTIVE[Active Issues<br/>Shows Estimated Return Time<br/>Highlights Overdue Items]
-    MY_ISSUED --> RETURNED[Returned Items]
+    MY_ISSUED --> ACTIVE[Active Issues<br/>Shows Estimated Return Time<br/>Highlights Overdue Items<br/>Shows Verification Status]
+    MY_ISSUED --> RETURNED[Returned Items<br/>Shows Return Verification Status]
     
     ACTIVE --> CHECK_OVERDUE{Item Overdue?}
     CHECK_OVERDUE -->|Yes| SHOW_OVERDUE[Display Overdue Warning<br/>Red Highlight]
@@ -264,9 +289,13 @@ flowchart TD
     
     SHOW_OVERDUE --> RETURN_ITEM[Return Item]
     SHOW_NORMAL --> RETURN_ITEM
-    RETURN_ITEM --> CONFIRM[Confirm Return]
-    CONFIRM --> UPDATE[Update Status]
-    UPDATE --> SUCCESS[Item Returned]
+    RETURN_ITEM --> FACE_VERIFY_RETURN[Face Verification<br/>Scan Live Face]
+    FACE_VERIFY_RETURN --> VERIFY_RETURN_MATCH{Face Matches<br/>Original Issuer?}
+    VERIFY_RETURN_MATCH -->|Yes| RETURN_SUCCESS[Item Returned<br/>Verification Status: VERIFIED]
+    VERIFY_RETURN_MATCH -->|No| RETURN_FAIL[Return Failed<br/>Verification Status: FAILED]
+    RETURN_FAIL --> DASH
+    RETURN_SUCCESS --> UPDATE[Update Status]
+    UPDATE --> SUCCESS[Item Returned Successfully]
     SUCCESS --> DASH
 ```
 
@@ -296,6 +325,8 @@ erDiagram
         string password
         enum role "SUPER_ADMIN, ADMIN, LAB_ADMIN, USER"
         string lab_id FK "nullable"
+        string image_url "nullable - base64 or file path"
+        string face_descriptor "nullable - base64 encoded"
         datetime created_at
         datetime updated_at
     }
@@ -326,9 +357,11 @@ erDiagram
         string item_id FK
         string lab_id FK
         datetime issue_time
-        datetime estimated_return_time "nullable - NEW"
+        datetime estimated_return_time "nullable"
         datetime return_time "nullable"
-        boolean notification_sent "default false - NEW"
+        boolean notification_sent "default false"
+        enum issue_verification_status "VERIFIED, FAILED, PENDING"
+        enum return_verification_status "VERIFIED, FAILED, PENDING - nullable"
         datetime created_at
         datetime updated_at
     }
@@ -343,6 +376,8 @@ erDiagram
 - **password**: String (Hashed with bcrypt)
 - **role**: Enum (SUPER_ADMIN, ADMIN, LAB_ADMIN, USER)
 - **lab_id**: Foreign Key to Lab (Optional - for LAB_ADMIN and USER)
+- **image_url**: String (Optional) - Base64 encoded image or file path
+- **face_descriptor**: String (Optional) - Base64 encoded face descriptor for face recognition
 - **created_at**: DateTime
 - **updated_at**: DateTime
 
@@ -370,9 +405,11 @@ erDiagram
 - **item_id**: Foreign Key to Item
 - **lab_id**: Foreign Key to Lab
 - **issue_time**: DateTime
-- **estimated_return_time**: DateTime (Optional) - **NEW FIELD**
+- **estimated_return_time**: DateTime (Optional)
 - **return_time**: DateTime (Optional)
-- **notification_sent**: Boolean (Default: false) - **NEW FIELD**
+- **notification_sent**: Boolean (Default: false)
+- **issue_verification_status**: Enum (VERIFIED, FAILED, PENDING) - Face verification status when item was issued
+- **return_verification_status**: Enum (VERIFIED, FAILED, PENDING) (Optional) - Face verification status when item was returned
 - **created_at**: DateTime
 - **updated_at**: DateTime
 
@@ -466,10 +503,17 @@ graph LR
     
     subgraph "User"
         U1[GET /api/user/items]
-        U2[POST /api/user/request-issue/:itemId]
+        U2[POST /api/user/issue/:itemId<br/>with liveImage & faceDescriptor]
         U3[GET /api/user/issued-items]
-        U4[POST /api/user/return/:issueRecordId]
+        U4[POST /api/user/return/:issueRecordId<br/>with liveImage & faceDescriptor]
         U5[GET /api/user/stats]
+    end
+    
+    subgraph "Face Recognition"
+        FR1[GET /api/face-recognition/health]
+        FR2[POST /api/face-recognition/detect]
+        FR3[POST /api/face-recognition/verify]
+        FR4[POST /api/face-recognition/compare]
     end
     
     subgraph "System Services"
@@ -541,29 +585,117 @@ flowchart TD
     NEXT -->|No| END
 ```
 
-## 9. Issue Item Flow with Estimated Return Time
+## 9. Issue Item Flow with Face Verification
 
 ```mermaid
 sequenceDiagram
-    participant LA as Lab Admin
+    participant U as User
     participant FE as Frontend
     participant API as API Server
+    participant FR as Face Recognition Service
+    participant PY as Python Service
     participant DB as Database
     participant OC as Overdue Checker
     
-    LA->>FE: Select Item & User<br/>Set Estimated Return Time
-    FE->>API: POST /api/lab-admin/issue<br/>{itemId, userId, estimatedReturnTime}
-    API->>DB: Create Issue Record<br/>(with estimated_return_time)
-    API->>DB: Update Item Status = ISSUED
-    DB-->>API: Success
-    API-->>FE: Item Issued Successfully
-    FE-->>LA: Confirmation
+    U->>FE: Select Item & Set Return Time
+    FE->>FE: Open Face Scan Component
+    FE->>PY: Capture Live Face Image
+    PY->>PY: Detect Face & Extract Encoding
+    PY-->>FE: Face Descriptor & Live Image
+    FE->>API: POST /api/user/issue/:itemId<br/>{liveImage, faceDescriptor, estimatedReturnTime}
+    API->>DB: Fetch User's Registered Face Data
+    DB-->>API: User imageUrl & faceDescriptor
+    API->>FR: Verify Face (liveImage vs registered)
+    FR->>PY: POST /verify-face
+    PY->>PY: Compare Face Encodings
+    PY-->>FR: Verification Result (is_match, distance)
+    FR-->>API: Verification Status
+    alt Face Matches
+        API->>DB: Create Issue Record<br/>(with issue_verification_status = VERIFIED)
+        API->>DB: Update Item Status = ISSUED
+        DB-->>API: Success
+        API-->>FE: Item Issued Successfully
+        FE-->>U: Confirmation with Verification Status
+    else Face Does Not Match
+        API-->>FE: 403 Forbidden<br/>Face Verification Failed
+        FE-->>U: Error: Unauthorized User
+    end
     
     Note over OC: Cron Job Runs Every Hour
     OC->>DB: Check for Overdue Items
     DB-->>OC: Found Overdue Item
     OC->>OC: Send Email Notifications
     OC->>DB: Mark notification_sent = true
+```
+
+## 9.1. User Registration with Face Scanning
+
+```mermaid
+sequenceDiagram
+    participant A as Admin/Super Admin
+    participant FE as Frontend
+    participant API as API Server
+    participant FR as Face Recognition Service
+    participant PY as Python Service
+    participant DB as Database
+    
+    A->>FE: Create User Form
+    FE->>FE: Open Face Scan Component
+    FE->>PY: Capture User Face Image
+    PY->>PY: Detect Face & Extract Encoding
+    PY-->>FE: Face Descriptor & Captured Image (base64)
+    FE->>API: POST /api/admin/create-user<br/>{name, email, password, labId,<br/>faceImage, faceDescriptor}
+    API->>DB: Store User with faceImage & faceDescriptor
+    DB-->>API: User Created
+    API-->>FE: User Created Successfully
+    FE-->>A: Confirmation
+```
+
+## 9.2. Face Verification Flow Diagram
+
+```mermaid
+flowchart TD
+    START([User Action: Issue/Return Item]) --> CHECK_FACE_DATA{User Has<br/>Registered Face?}
+    
+    CHECK_FACE_DATA -->|No| ERROR_NO_FACE[Error: Face Registration Required<br/>Please register face first]
+    CHECK_FACE_DATA -->|Yes| OPEN_CAMERA[Open Camera<br/>FaceScanPython Component]
+    
+    OPEN_CAMERA --> CAPTURE[Capture Live Face Image]
+    CAPTURE --> DETECT[Python Service: Detect Face]
+    DETECT --> FACE_FOUND{Face Detected?}
+    
+    FACE_FOUND -->|No| ERROR_NO_DETECT[Error: No Face Detected<br/>Please position face in frame]
+    FACE_FOUND -->|Multiple| ERROR_MULTIPLE[Error: Multiple Faces Detected<br/>Only one person allowed]
+    FACE_FOUND -->|Yes| EXTRACT[Extract Face Encoding/Descriptor]
+    
+    EXTRACT --> SEND_BACKEND[Send to Backend<br/>liveImage + faceDescriptor]
+    SEND_BACKEND --> FETCH_REGISTERED[Backend: Fetch User's<br/>Registered Face Data]
+    
+    FETCH_REGISTERED --> VERIFY[Python Service: Verify Face<br/>Compare Live vs Registered]
+    VERIFY --> CALCULATE[Calculate Distance<br/>Compare with Threshold 0.65]
+    
+    CALCULATE --> MATCH{Distance < Threshold?}
+    
+    MATCH -->|Yes| VERIFIED[Verification: VERIFIED<br/>Distance < 0.65]
+    MATCH -->|No| FAILED[Verification: FAILED<br/>Distance >= 0.65]
+    
+    VERIFIED --> ALLOW[Allow Action<br/>Issue/Return Item]
+    ALLOW --> STORE_STATUS[Store Verification Status<br/>in IssueRecord]
+    STORE_STATUS --> SUCCESS[Action Successful<br/>Show Success Message]
+    
+    FAILED --> BLOCK[Block Action<br/>403 Forbidden]
+    BLOCK --> ERROR_MSG[Show Error Message<br/>Face Verification Failed<br/>Unauthorized User]
+    
+    ERROR_NO_FACE --> END([End])
+    ERROR_NO_DETECT --> OPEN_CAMERA
+    ERROR_MULTIPLE --> OPEN_CAMERA
+    ERROR_MSG --> END
+    SUCCESS --> END
+    
+    style VERIFIED fill:#c8e6c9
+    style FAILED fill:#ffcdd2
+    style SUCCESS fill:#c8e6c9
+    style ERROR_MSG fill:#ffcdd2
 ```
 
 ## 10. Data Flow Diagram - Updated
@@ -586,16 +718,20 @@ sequenceDiagram
     A-->>F: Token + User Data
     F-->>U: Redirect to Dashboard
     
-    U->>F: Issue Item with Estimated Return Time
-    F->>A: API Request + Token<br/>{itemId, userId, estimatedReturnTime}
+    U->>F: Issue Item with Face Verification
+    F->>F: Capture Live Face Image
+    F->>A: API Request + Token<br/>{itemId, estimatedReturnTime,<br/>liveImage, faceDescriptor}
     A->>M: Authenticate Token
-    M->>M: Verify Role (LAB_ADMIN)
+    M->>M: Verify Role (USER)
     M-->>A: Authorized
-    A->>D: Create Issue Record<br/>(with estimated_return_time)
+    A->>D: Fetch User's Registered Face
+    D-->>A: User Face Data
+    A->>A: Verify Face (Backend Verification)
+    A->>D: Create Issue Record<br/>(with issue_verification_status)
     A->>D: Update Item Status
     D-->>A: Success
-    A-->>F: Response
-    F-->>U: Item Issued
+    A-->>F: Response with Verification Status
+    F-->>U: Item Issued (VERIFIED/FAILED)
     
     Note over C: Every Hour
     C->>D: Query Overdue Items
@@ -614,8 +750,9 @@ graph TB
         LOGIN_PAGE[Login Page]
         DASHBOARDS[Dashboards<br/>Role-Based]
         FORMS[Forms<br/>Create/Edit<br/>with DateTime Picker]
-        TABLES[Tables<br/>Data Display<br/>with Overdue Indicators]
+        TABLES[Tables<br/>Data Display<br/>with Overdue Indicators<br/>Verification Status]
         SIDEBAR[Sidebar Navigation]
+        FACE_SCAN[FaceScanPython Component<br/>Camera & Face Detection]
     end
     
     subgraph "Backend Services"
@@ -625,8 +762,13 @@ graph TB
         LAB_SERVICE[Lab Management]
         ITEM_SERVICE[Item Management]
         ISSUE_SERVICE[Issue Management]
+        FACE_SERVICE[Face Recognition Service<br/>Node.js Intermediary]
         EMAIL_SERVICE[Email Service<br/>Nodemailer]
         OVERDUE_SERVICE[Overdue Checker Service<br/>Cron Job]
+    end
+    
+    subgraph "Python Service"
+        PYTHON_FACE[Python Flask Service<br/>Face Detection & Verification]
     end
     
     subgraph "Middleware"
@@ -660,6 +802,7 @@ graph TB
     LAB_SERVICE --> AUTHORIZE_MW
     ITEM_SERVICE --> AUTHORIZE_MW
     ISSUE_SERVICE --> AUTHORIZE_MW
+    FACE_SERVICE --> AUTHORIZE_MW
     
     AUTH_MW --> RBAC_SERVICE
     AUTHORIZE_MW --> RBAC_SERVICE
@@ -669,12 +812,16 @@ graph TB
     ITEM_SERVICE --> PRISMA_CLIENT
     ISSUE_SERVICE --> PRISMA_CLIENT
     OVERDUE_SERVICE --> PRISMA_CLIENT
+    FACE_SERVICE --> PRISMA_CLIENT
     
     USER_SERVICE --> MONGOOSE
     LAB_SERVICE --> MONGOOSE
     ITEM_SERVICE --> MONGOOSE
     ISSUE_SERVICE --> MONGOOSE
     OVERDUE_SERVICE --> MONGOOSE
+    
+    FACE_SERVICE --> PYTHON_FACE
+    ISSUE_SERVICE --> FACE_SERVICE
     
     OVERDUE_SERVICE --> EMAIL_SERVICE
     EMAIL_SERVICE --> SMTP_SERVER
@@ -683,7 +830,7 @@ graph TB
     MONGOOSE --> MONGO
 ```
 
-## 12. Authentication & Authorization Flow
+## 13. Authentication & Authorization Flow
 
 ```mermaid
 flowchart TD
@@ -715,17 +862,17 @@ flowchart TD
     ALLOW_U --> PROCESS
 ```
 
-## 13. Issue/Return Workflow with Overdue Tracking
+## 14. Issue/Return Workflow with Overdue Tracking
 
 ```mermaid
 stateDiagram-v2
     [*] --> Available: Item Created
     
-    Available --> Issued: Lab Admin Issues Item<br/>Sets estimated_return_time
+    Available --> Issued: User/Lab Admin Issues Item<br/>Face Verification Required<br/>Sets estimated_return_time<br/>issue_verification_status = VERIFIED/FAILED
     Issued --> Overdue: estimated_return_time Passed<br/>notification_sent = false
     Overdue --> Overdue: Email Sent<br/>notification_sent = true
-    Overdue --> Available: User/Lab Admin Returns Item
-    Issued --> Available: User/Lab Admin Returns Item<br/>(Before Due Date)
+    Overdue --> Available: User/Lab Admin Returns Item<br/>Face Verification Required<br/>return_verification_status = VERIFIED/FAILED
+    Issued --> Available: User/Lab Admin Returns Item<br/>(Before Due Date)<br/>Face Verification Required<br/>return_verification_status = VERIFIED/FAILED
     Available --> Maintenance: Lab Admin Sets Maintenance
     Maintenance --> Available: Lab Admin Sets Available
     
@@ -737,6 +884,7 @@ stateDiagram-v2
     note right of Issued
         Item is with user
         estimated_return_time set
+        issue_verification_status recorded
         System monitors for overdue
     end note
     
@@ -753,7 +901,7 @@ stateDiagram-v2
     end note
 ```
 
-## 14. Complete System Overview
+## 15. Complete System Overview
 
 ```mermaid
 graph TB
@@ -769,9 +917,14 @@ graph TB
         BL1[User Management]
         BL2[Lab Management]
         BL3[Item Management]
-        BL4[Issue Management]
+        BL4[Issue Management<br/>with Face Verification]
         BL5[Email Notification]
         BL6[Overdue Monitoring]
+        BL7[Face Recognition Service]
+    end
+    
+    subgraph "Face Recognition Layer"
+        PYTHON_SVC[Python Flask Service<br/>Face Detection & Verification]
     end
     
     subgraph "Data Persistence Layer"
@@ -792,11 +945,16 @@ graph TB
     REST --> BL2
     REST --> BL3
     REST --> BL4
+    REST --> BL7
     
     BL1 --> DB
     BL2 --> DB
     BL3 --> DB
     BL4 --> DB
+    BL7 --> DB
+    
+    BL4 --> BL7
+    BL7 --> PYTHON_SVC
     
     CRON --> BL6
     BL6 --> DB
@@ -807,7 +965,7 @@ graph TB
     BL4 --> BL5
 ```
 
-## 15. Project Flow Diagram
+## 16. Project Flow Diagram
 
 ```mermaid
 flowchart TD
@@ -914,16 +1072,27 @@ flowchart TD
         U_DASH --> U_VIEW_ITEMS[View Available Items]
         U_DASH --> U_MY_ITEMS[My Issued Items<br/>Check Overdue Status]
         
-        U_VIEW_ITEMS --> U_REQUEST[Request Item Issue]
-        U_REQUEST --> U_DASH
+        U_VIEW_ITEMS --> U_SELECT_ITEM[Select Item]
+        U_SELECT_ITEM --> U_SET_RETURN_TIME[Set Estimated Return Time]
+        U_SET_RETURN_TIME --> U_FACE_SCAN_ISSUE[Face Verification<br/>Scan Live Face]
+        U_FACE_SCAN_ISSUE --> U_VERIFY_ISSUE{Face Matches?}
+        U_VERIFY_ISSUE -->|Yes| U_ISSUE_SUCCESS[Item Issued<br/>Verification: VERIFIED]
+        U_VERIFY_ISSUE -->|No| U_ISSUE_FAIL[Issue Failed<br/>Verification: FAILED]
+        U_ISSUE_SUCCESS --> U_DASH
+        U_ISSUE_FAIL --> U_DASH
         
         U_MY_ITEMS --> U_CHECK_OVERDUE{Item Overdue?}
-        U_CHECK_OVERDUE -->|Yes| U_OVERDUE_WARNING[Display Overdue Warning]
-        U_CHECK_OVERDUE -->|No| U_NORMAL[Display Normal Status]
+        U_CHECK_OVERDUE -->|Yes| U_OVERDUE_WARNING[Display Overdue Warning<br/>Show Verification Status]
+        U_CHECK_OVERDUE -->|No| U_NORMAL[Display Normal Status<br/>Show Verification Status]
         
         U_OVERDUE_WARNING --> U_RETURN[Return Item]
         U_NORMAL --> U_RETURN
-        U_RETURN --> U_DASH
+        U_RETURN --> U_FACE_SCAN_RETURN[Face Verification<br/>Scan Live Face]
+        U_FACE_SCAN_RETURN --> U_VERIFY_RETURN{Face Matches<br/>Original Issuer?}
+        U_VERIFY_RETURN -->|Yes| U_RETURN_SUCCESS[Item Returned<br/>Verification: VERIFIED]
+        U_VERIFY_RETURN -->|No| U_RETURN_FAIL[Return Failed<br/>Verification: FAILED]
+        U_RETURN_SUCCESS --> U_DASH
+        U_RETURN_FAIL --> U_DASH
     end
     
     subgraph "Background Processes"
@@ -945,11 +1114,16 @@ flowchart TD
     CREATE_RECORD --> UPDATE_ITEM_STATUS[Update Item Status = ISSUED]
     UPDATE_ITEM_STATUS --> MONITOR[System Monitors for Overdue]
     
+    U_FACE_SCAN_ISSUE --> CREATE_RECORD_USER[Create Issue Record<br/>with issue_verification_status]
+    CREATE_RECORD_USER --> UPDATE_ITEM_STATUS_USER[Update Item Status = ISSUED]
+    UPDATE_ITEM_STATUS_USER --> MONITOR
+    
     MONITOR --> CHECK_OVERDUE
     
-    U_RETURN --> RETURN_PROCESS[Return Process]
+    U_RETURN --> RETURN_PROCESS[Return Process<br/>with Face Verification]
     LA_HISTORY --> RETURN_PROCESS
-    RETURN_PROCESS --> UPDATE_RETURN_TIME[Update return_time in Record]
+    RETURN_PROCESS --> VERIFY_RETURN_FACE[Verify Face Matches Original Issuer]
+    VERIFY_RETURN_FACE --> UPDATE_RETURN_TIME[Update return_time &<br/>return_verification_status in Record]
     UPDATE_RETURN_TIME --> UPDATE_ITEM_AVAILABLE[Update Item Status = AVAILABLE]
     UPDATE_ITEM_AVAILABLE --> U_DASH
     UPDATE_ITEM_AVAILABLE --> LA_DASH
@@ -976,13 +1150,30 @@ flowchart TD
 
 ### Key Updates in This Version:
 
-1. **Email Notification System**: Added email service and SMTP integration
-2. **Overdue Checker Service**: Added cron job for automatic overdue detection
-3. **Estimated Return Time**: New field in IssueRecord for tracking expected return dates
-4. **Notification Tracking**: `notification_sent` field to prevent duplicate emails
-5. **Updated User Flows**: Include estimated return time setting and overdue indicators
-6. **Updated ERD**: Includes new fields (`estimated_return_time`, `notification_sent`)
-7. **New API Endpoints**: Manual trigger for overdue check and test email endpoint
+1. **Face Recognition System**: 
+   - Python Flask service for face detection and verification
+   - Face scanning during user registration
+   - Face verification required for item issue and return
+   - Face verification status tracking (VERIFIED, FAILED, PENDING)
+   - Base64 image storage in database
+   - Face descriptor storage for faster verification
+
+2. **Email Notification System**: Added email service and SMTP integration
+3. **Overdue Checker Service**: Added cron job for automatic overdue detection
+4. **Estimated Return Time**: New field in IssueRecord for tracking expected return dates
+5. **Notification Tracking**: `notification_sent` field to prevent duplicate emails
+6. **Updated User Flows**: 
+   - Users can issue items themselves with face verification
+   - Face verification required for both issue and return
+   - Verification status displayed in issue history
+7. **Updated ERD**: Includes new fields:
+   - `image_url` and `face_descriptor` in User model
+   - `issue_verification_status` and `return_verification_status` in IssueRecord model
+   - `estimated_return_time`, `notification_sent`
+8. **New API Endpoints**: 
+   - Face recognition endpoints (`/api/face-recognition/*`)
+   - Updated user issue endpoint with face verification
+   - Updated return endpoint with face verification
 
 ### System Features:
 
@@ -990,6 +1181,9 @@ flowchart TD
 - **Direct MongoDB operations** (via Mongoose) for create/update to avoid transaction requirements
 - **JWT tokens** for authentication with 7-day expiration
 - **Role-based access control** enforced at middleware level
+- **Face Recognition**: Python-based service for secure face verification
+- **User Self-Service**: Users can issue items themselves after face verification
 - **Automatic overdue detection** via cron job (runs every hour)
 - **Email notifications** sent to both users and lab admins for overdue items
 - **Data consistency checks** and automatic fixes in overdue checker
+- **Verification Status Tracking**: Complete audit trail of face verification for all issue and return operations

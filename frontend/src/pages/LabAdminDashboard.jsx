@@ -7,6 +7,7 @@ import ManageItems from '../components/labAdmin/ManageItems';
 import IssueItems from '../components/labAdmin/IssueItems';
 import IssueHistory from '../components/labAdmin/IssueHistory';
 import ViewUsers from '../components/labAdmin/ViewUsers';
+import LabAdminReports from '../components/labAdmin/LabAdminReports';
 
 const LabAdminDashboard = () => {
   const location = useLocation();
@@ -32,38 +33,38 @@ const LabAdminDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen font-display">
       <Sidebar currentPage={currentPage} />
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-6 md:p-8">
         <Routes>
           <Route
             index
             element={
               <div>
-                <h1 className="text-3xl font-bold mb-6 text-gray-800">Lab Admin Dashboard</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight mb-6 text-slate-100">Lab Admin Dashboard</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                   <StatCard
                     title="Total Items"
                     value={stats.totalItems}
-                    icon={<span className="text-white text-2xl">📦</span>}
+                    icon={<span className="text-2xl">📦</span>}
                     color="blue"
                   />
                   <StatCard
                     title="Available"
                     value={stats.availableItems}
-                    icon={<span className="text-white text-2xl">✅</span>}
+                    icon={<span className="text-2xl">✅</span>}
                     color="green"
                   />
                   <StatCard
                     title="Issued"
                     value={stats.issuedItems}
-                    icon={<span className="text-white text-2xl">📤</span>}
+                    icon={<span className="text-2xl">📤</span>}
                     color="yellow"
                   />
                   <StatCard
                     title="Active Issues"
                     value={stats.activeIssues}
-                    icon={<span className="text-white text-2xl">⏱️</span>}
+                    icon={<span className="text-2xl">⏱️</span>}
                     color="red"
                   />
                 </div>
@@ -73,6 +74,7 @@ const LabAdminDashboard = () => {
           <Route path="items" element={<ManageItems onUpdate={fetchStats} />} />
           <Route path="issue" element={<IssueItems onUpdate={fetchStats} />} />
           <Route path="history" element={<IssueHistory />} />
+          <Route path="reports" element={<LabAdminReports />} />
           <Route path="users" element={<ViewUsers />} />
           <Route path="*" element={<Navigate to="/lab-admin" replace />} />
         </Routes>

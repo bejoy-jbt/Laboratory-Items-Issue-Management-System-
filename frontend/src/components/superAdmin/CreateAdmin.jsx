@@ -2,6 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 
 const CreateAdmin = ({ onSuccess }) => {
+  const lettersAndSpacesOnly = (value) => value.replace(/[^a-zA-Z\s]/g, '');
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,8 +29,8 @@ const CreateAdmin = ({ onSuccess }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Create Admin</h2>
-      <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
+      <h2 className="text-2xl font-bold mb-6 text-white-800">Create Admin</h2>
+      <div className="bg-white rounded-lg shadow-md p-6 max-w-md" style={{ colorScheme: 'light' }}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
@@ -45,9 +47,11 @@ const CreateAdmin = ({ onSuccess }) => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: lettersAndSpacesOnly(e.target.value) })
+              }
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -57,7 +61,7 @@ const CreateAdmin = ({ onSuccess }) => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md !bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -67,7 +71,7 @@ const CreateAdmin = ({ onSuccess }) => {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md !bg-white !text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <button

@@ -2,12 +2,45 @@
 
 ## Quick Links
 
+- [Project Source Documentation](./PROJECT_SOURCE_DOCUMENTATION.md) - Complete project documentation (Abstract, Goals, Requirements, ER Diagram)
+- [BPMN Diagrams](./BPMN_DIAGRAMS.md) - Standard BPMN 2.0 business process diagrams
 - [System Diagrams](./DIAGRAMS.md) - Complete system, user flow, and ER diagrams
 - [API Documentation](./API.md) - Detailed API endpoint documentation
 - [Setup Guide](../README.md) - Installation and setup instructions
 
-## Diagram Files
+## Documentation Files
 
+### Project Source Documentation (`PROJECT_SOURCE_DOCUMENTATION.md`)
+Complete project documentation including:
+- Project Title and Abstract
+- Project Goals and Success Criteria
+- Project Flow Analysis
+- ER Diagram with detailed schema
+- Functional Requirements (10 modules)
+- Non-Functional Requirements
+- Existing System Analysis
+
+### BPMN Diagrams
+- **[BPMN_DIAGRAMS.md](./BPMN_DIAGRAMS.md)** - Standard BPMN 2.0 business process diagrams including:
+  - Item Issuance Process (Lab Admin)
+  - Item Issuance Process (User Self-Service)
+  - Item Return Process
+  - Overdue Item Notification Process
+  - User Registration Process
+  - Complete Item Lifecycle Process
+  - Face Verification Sub-Process
+  - Pool and Lane Diagrams
+  - Error Handling Processes
+
+- **[BPMN_COMPLETE_PROCESS.md](./BPMN_COMPLETE_PROCESS.md)** - Comprehensive BPMN diagram with Pools and Lanes (professional format):
+  - Main Business Process with 3 Pools (User, Lab Admin, System)
+  - Detailed Process Flow with all system services
+  - Complete Item Lifecycle Process
+  - Message flows between participants
+  - Data stores and timer events
+  - All lanes for system services
+
+### System Diagrams (`DIAGRAMS.md`)
 The `DIAGRAMS.md` file contains:
 
 1. **System Architecture Diagram** - Overall system structure

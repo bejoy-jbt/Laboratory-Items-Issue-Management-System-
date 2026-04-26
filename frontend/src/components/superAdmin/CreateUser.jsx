@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import FaceScanPython from '../FaceScanPython';
 
 const CreateUser = ({ onSuccess }) => {
+  const lettersAndSpacesOnly = (value) => value.replace(/[^a-zA-Z\s]/g, '');
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -12,6 +15,9 @@ const CreateUser = ({ onSuccess }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showFaceScan, setShowFaceScan] = useState(false);
+  const [faceDescriptor, setFaceDescriptor] = useState(null);
+  const [faceImage, setFaceImage] = useState(null); // Store the captured face image as base64
 
   useEffect(() => {
     fetchLabs();
@@ -27,16 +33,70 @@ const CreateUser = ({ onSuccess }) => {
     }
   };
 
+  const handleFaceDetected = (...args) => {
+    console.log('=== handleFaceDetected in CreateUser ===');
+    console.log('All arguments received:', { count: args.length, allArgs: args });
+
+    let descriptor = null;
+    let capturedImage = null;
+
+    // Extract descriptor and image from args
+    args.forEach(arg => {
+      if (typeof arg === 'string' && arg.startsWith('data:image')) {
+        capturedImage = arg;
+      } else if (arg !== true && arg !== false && arg !== null && typeof arg !== 'undefined') {
+        // This might be the descriptor
+        descriptor = arg;
+      }
+    });
+
+    console.log('Extracted:', { hasDescriptor: !!descriptor, hasImage: !!capturedImage });
+
+    if (capturedImage) {
+      setFaceImage(capturedImage);
+    }
+    if (descriptor) {
+      setFaceDescriptor(descriptor);
+    }
+    setShowFaceScan(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
     setError('');
+    
+    if (!faceImage) {
+      setError('Please scan your face for verification');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await axios.post('/api/super-admin/create-user', formData);
+      // Send as JSON since faceImage is a base64 string, not a file
+      const submitData = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        labId: formData.labId,
+        faceImage: faceImage // Send base64 image
+      };
+      
+      if (faceDescriptor) {
+        submitData.faceDescriptor = faceDescriptor;
+      }
+
+      await axios.post('/api/super-admin/create-user', submitData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       setMessage('User created successfully!');
       setFormData({ name: '', email: '', password: '', labId: '' });
+      setFaceImage(null);
+      setFaceDescriptor(null);
       if (onSuccess) onSuccess();
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to create user');
@@ -47,8 +107,8 @@ const CreateUser = ({ onSuccess }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Create User</h2>
-      <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
+      <h2 className="text-2xl font-bold mb-6 text-white-800">Create User</h2>
+      <div className="bg-white rounded-lg shadow-md p-6 max-w-md" style={{ colorScheme: 'light' }}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
@@ -66,7 +126,7 @@ const CreateUser = ({ onSuccess }) => {
               value={formData.labId}
               onChange={(e) => setFormData({ ...formData, labId: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a lab</option>
               {labs.map((lab) => (
@@ -81,10 +141,12 @@ const CreateUser = ({ onSuccess }) => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: lettersAndSpacesOnly(e.target.value) })
+              }
               required
               placeholder="Enter user's full name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -95,7 +157,7 @@ const CreateUser = ({ onSuccess }) => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               placeholder="Enter user's email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md !bg-white !text-black placeholder:!text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -106,18 +168,44 @@ const CreateUser = ({ onSuccess }) => {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
               placeholder="Enter initial password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md !bg-white !text-black placeholder:!text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-500 mt-1">User will use this password to login</p>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Face Verification</label>
+            <button
+              type="button"
+              onClick={() => setShowFaceScan(true)}
+              className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed mb-2"
+            >
+              {faceImage ? '✓ Face Scanned - Click to Rescan' : 'Scan Face for Verification'}
+            </button>
+            {faceImage && (
+              <div className="mt-2">
+                <img
+                  src={faceImage}
+                  alt="Face Preview"
+                  className="w-32 h-32 object-cover rounded-md border border-gray-300"
+                />
+              </div>
+            )}
+            <p className="text-xs text-gray-500 mt-1">Face scanning is required for user verification during item issuance</p>
+          </div>
           <button
             type="submit"
-            disabled={loading || labs.length === 0}
+            disabled={loading || labs.length === 0 || !faceImage}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? 'Creating User...' : 'Create User'}
           </button>
         </form>
+        {showFaceScan && (
+          <FaceScanPython
+            onFaceDetected={handleFaceDetected}
+            onClose={() => setShowFaceScan(false)}
+          />
+        )}
       </div>
     </div>
   );

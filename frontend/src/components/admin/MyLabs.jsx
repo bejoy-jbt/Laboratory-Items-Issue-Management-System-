@@ -26,22 +26,22 @@ const MyLabs = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">My Labs</h2>
+      <h2 className="text-2xl font-extrabold tracking-tight mb-6 text-slate-100">My Labs</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {labs.map((lab) => (
-          <div key={lab.id} className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-bold text-gray-800 mb-2">{lab.name}</h3>
-            <p className="text-gray-600 mb-4">{lab.department}</p>
-            <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Items:</span> {lab._count?.items || 0}</p>
-              <p><span className="font-medium">Users:</span> {lab._count?.users || 0}</p>
-              <p><span className="font-medium">Issues:</span> {lab._count?.issueRecords || 0}</p>
+          <div key={lab.id} className="bg-white rounded-lg shadow-md p-6 text-slate-900">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">{lab.name}</h3>
+            <p className="text-slate-700 mb-4">{lab.department}</p>
+            <div className="space-y-2 text-sm text-slate-900">
+              <p><span className="font-semibold text-slate-900">Items:</span> <span className="text-slate-900">{lab._count?.items || 0}</span></p>
+              <p><span className="font-semibold text-slate-900">Users:</span> <span className="text-slate-900">{lab._count?.users || 0}</span></p>
+              <p><span className="font-semibold text-slate-900">Issues:</span> <span className="text-slate-900">{lab._count?.issueRecords || 0}</span></p>
             </div>
           </div>
         ))}
       </div>
       {labs.length === 0 && (
-        <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow-md">
+        <div className="text-center py-8 text-slate-700 bg-white rounded-lg shadow-md">
           No labs assigned to you
         </div>
       )}

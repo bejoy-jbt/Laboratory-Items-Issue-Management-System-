@@ -98,7 +98,7 @@ const ViewLabs = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">All Labs</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white-800">All Labs</h2>
       
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -140,7 +140,7 @@ const ViewLabs = () => {
                         type="text"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-2 py-1 border border-gray-300 rounded bg-white text-black"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -148,14 +148,14 @@ const ViewLabs = () => {
                         type="text"
                         value={formData.department}
                         onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-2 py-1 border border-gray-300 rounded bg-white text-black"
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
                         value={formData.empId}
                         onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
-                        className="w-full px-2 py-1 border border-gray-300 rounded"
+                        className="w-full px-2 py-1 border border-gray-300 rounded bg-white text-black"
                       >
                         <option value="">No Admin</option>
                         {admins.map((admin) => (
@@ -246,7 +246,7 @@ const ViewLabs = () => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black"
                   required
                 />
               </div>
@@ -258,7 +258,7 @@ const ViewLabs = () => {
                   type="text"
                   value={formData.department}
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black"
                   required
                 />
               </div>
@@ -269,7 +269,7 @@ const ViewLabs = () => {
                 <select
                   value={formData.empId}
                   onChange={(e) => setFormData({ ...formData, empId: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black"
                   disabled={loadingAdmins}
                 >
                   <option value="">No Admin</option>

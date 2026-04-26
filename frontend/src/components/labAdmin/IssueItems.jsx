@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import FaceScanPython from '../FaceScanPython';
 
 const IssueItems = ({ onUpdate }) => {
   const [items, setItems] = useState([]);
@@ -11,6 +12,8 @@ const IssueItems = ({ onUpdate }) => {
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [showFaceScan, setShowFaceScan] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -28,6 +31,26 @@ const IssueItems = ({ onUpdate }) => {
       console.error('Failed to fetch data:', error);
     }
   };
+  const handleFaceDetected = async (descriptor) => {
+    setShowFaceScan(false);
+    
+    try {
+      const issueData = {
+        ...formData,
+        faceDescriptor: descriptor
+      };
+      
+      await axios.post('/api/lab-admin/issue', issueData);
+      setMessage('Item issued successfully!');
+      setFormData({ itemId: '', userId: '', estimatedReturnTime: '' });
+      setSelectedUser(null);
+      fetchData();
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to issue item');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
@@ -43,20 +66,28 @@ const IssueItems = ({ onUpdate }) => {
       return;
     }
 
-    try {
-      await axios.post('/api/lab-admin/issue', formData);
-      setMessage('Item issued successfully!');
-      setFormData({ itemId: '', userId: '', estimatedReturnTime: '' });
-      fetchData();
-      if (onUpdate) onUpdate();
-    } catch (error) {
-      setError(error.response?.data?.message || 'Failed to issue item');
+    // Find selected user to get their image
+    const user = users.find(u => u.id === formData.userId);
+    if (user && user.imageUrl) {
+      setSelectedUser(user);
+      setShowFaceScan(true);
+    } else {
+      // If user doesn't have an image, proceed without face scan
+      try {
+        await axios.post('/api/lab-admin/issue', formData);
+        setMessage('Item issued successfully!');
+        setFormData({ itemId: '', userId: '', estimatedReturnTime: '' });
+        fetchData();
+        if (onUpdate) onUpdate();
+      } catch (error) {
+        setError(error.response?.data?.message || 'Failed to issue item');
+      }
     }
   };
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Issue Items</h2>
+      <h2 className="text-2xl font-extrabold tracking-tight mb-6 text-slate-100">Issue Items</h2>
 
       {message && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
@@ -69,8 +100,8 @@ const IssueItems = ({ onUpdate }) => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h3 className="text-xl font-bold mb-4">Issue Item to User</h3>
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6 text-slate-900">
+        <h3 className="text-xl font-bold mb-4 text-slate-900">Issue Item to User</h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Select Item</label>
@@ -78,7 +109,7 @@ const IssueItems = ({ onUpdate }) => {
               value={formData.itemId}
               onChange={(e) => setFormData({ ...formData, itemId: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select an item</option>
               {items.map((item) => (
@@ -94,7 +125,7 @@ const IssueItems = ({ onUpdate }) => {
               value={formData.userId}
               onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a user</option>
               {users.map((user) => (
@@ -115,9 +146,9 @@ const IssueItems = ({ onUpdate }) => {
               onChange={(e) => setFormData({ ...formData, estimatedReturnTime: e.target.value })}
               required
               min={new Date().toISOString().slice(0, 16)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <p className="text-xs text-gray-500 mt-1">Select when the item should be returned</p>
+            <p className="text-xs text-slate-600 mt-1">Select when the item should be returned</p>
           </div>
           <button
             type="submit"
@@ -128,32 +159,47 @@ const IssueItems = ({ onUpdate }) => {
         </form>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-bold mb-4">Available Items</h3>
+      <div className="bg-white rounded-lg shadow-md p-6 text-slate-900">
+        <h3 className="text-xl font-bold mb-4 text-slate-900">Available Items</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50 text-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">Name</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide">Description</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-slate-200 text-slate-800">
               {items.map((item) => (
-                <tr key={item.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{item.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.category}</td>
-                  <td className="px-6 py-4 text-sm text-gray-500">{item.description || '-'}</td>
+                <tr key={item.id} className="hover:bg-slate-50/80">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">
+                    {item.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">{item.category}</td>
+                  <td className="px-6 py-4 text-sm text-slate-700">{item.description || '-'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
           {items.length === 0 && (
-            <div className="text-center py-8 text-gray-500">No available items</div>
+            <div className="text-center py-8 text-slate-700">No available items</div>
           )}
         </div>
       </div>
+      {showFaceScan && selectedUser && (
+        <FaceScanPython
+          onFaceDetected={handleFaceDetected}
+          onClose={() => {
+            setShowFaceScan(false);
+            setSelectedUser(null);
+          }}
+          userId={selectedUser.id}
+          userName={selectedUser.name}
+          userImageUrl={selectedUser.imageUrl}
+          userEncoding={selectedUser.faceDescriptor}
+        />
+      )}
     </div>
   );
 };
