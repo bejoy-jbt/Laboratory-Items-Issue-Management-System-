@@ -44,7 +44,7 @@ const AdminDashboard = () => {
                 <h1 className="text-3xl font-extrabold tracking-tight mb-6 text-slate-100">Admin Dashboard</h1>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <StatCard
-                    title="My Labs"
+                    title="Labs"
                     value={stats.totalLabs}
                     icon={<span className="text-2xl">🏢</span>}
                     color="blue"

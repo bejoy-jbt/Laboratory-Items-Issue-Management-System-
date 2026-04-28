@@ -103,7 +103,7 @@ const IssuedItems = ({ onUpdate }) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-slate-100">My Issued Items</h2>
+      <h2 className="text-2xl font-bold mb-6 text-slate-100">Issued Items</h2>
 
       {activeIssues.length > 0 && (
         <div className="mb-8">

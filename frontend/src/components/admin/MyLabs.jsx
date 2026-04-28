@@ -26,7 +26,7 @@ const MyLabs = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-extrabold tracking-tight mb-6 text-slate-100">My Labs</h2>
+      <h2 className="text-2xl font-extrabold tracking-tight mb-6 text-slate-100">Labs</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {labs.map((lab) => (
           <div key={lab.id} className="bg-white rounded-lg shadow-md p-6 text-slate-900">

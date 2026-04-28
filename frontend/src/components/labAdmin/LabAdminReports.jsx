@@ -46,8 +46,8 @@ const LabAdminReports = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ReportPie title="Inventory Status (My Lab)" data={statusCounts} />
-        <ReportLine title="Issues Trend (My Lab)" issueRecords={issueRecords} days={14} />
+        <ReportPie title="Inventory Status (Lab)" data={statusCounts} />
+        <ReportLine title="Issues Trend (Lab)" issueRecords={issueRecords} days={14} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

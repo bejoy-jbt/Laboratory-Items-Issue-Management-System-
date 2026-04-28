@@ -105,7 +105,7 @@ const ViewLabAdmins = () => {
   if (loading) {
     return (
       <div>
-        <h2 className="text-2xl font-bold mb-6 text-grey-800">My Lab Admins</h2>
+        <h2 className="text-2xl font-bold mb-6 text-grey-800">Lab Admins</h2>
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="text-center text-gray-500">Loading...</div>
         </div>
@@ -115,7 +115,7 @@ const ViewLabAdmins = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6 text-white-800">My Lab Admins</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white-800">Lab Admins</h2>
       
       {error && (
         <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">

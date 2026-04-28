@@ -3,6 +3,8 @@ import axios from 'axios';
 import FaceScanPython from '../FaceScanPython';
 
 const CreateUser = ({ onSuccess }) => {
+  const lettersAndSpacesOnly = (value) => value.replace(/[^a-zA-Z\s]/g, '');
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -105,7 +107,7 @@ const CreateUser = ({ onSuccess }) => {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6 text-white-800">Create User</h2>
-      <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
+      <div className="bg-white rounded-lg shadow-md p-6 max-w-md" style={{ colorScheme: 'light' }}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {message && (
             <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
@@ -123,7 +125,7 @@ const CreateUser = ({ onSuccess }) => {
               value={formData.labId}
               onChange={(e) => setFormData({ ...formData, labId: e.target.value })}
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a lab</option>
               {labs.map((lab) => (
@@ -138,10 +140,12 @@ const CreateUser = ({ onSuccess }) => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: lettersAndSpacesOnly(e.target.value) })
+              }
               required
               placeholder="Enter user's full name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -152,7 +156,7 @@ const CreateUser = ({ onSuccess }) => {
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
               placeholder="Enter user's email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -163,7 +167,7 @@ const CreateUser = ({ onSuccess }) => {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
               placeholder="Enter initial password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <p className="text-xs text-gray-500 mt-1">User will use this password to login</p>
           </div>

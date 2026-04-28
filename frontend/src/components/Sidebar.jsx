@@ -56,6 +56,11 @@ const Sidebar = ({ currentPage }) => {
           </span>
         </div>
         <div className="text-xs text-slate-400 mt-1">{getRoleName(user?.role)}</div>
+        {(user?.role === 'LAB_ADMIN' || user?.role === 'USER') && (
+          <div className="text-xs text-slate-300 mt-2">
+            <span className="text-slate-400">Lab:</span> {user?.lab?.name || 'Not assigned'}
+          </div>
+        )}
       </div>
 
       <nav className="space-y-2">
@@ -174,7 +179,7 @@ const Sidebar = ({ currentPage }) => {
                   : 'border-transparent text-slate-200 hover:bg-white/5 hover:border-white/10'
               }`}
             >
-              My Labs
+              Labs
             </Link>
             <Link
               to={`${getRolePath(user.role)}/create-lab-admin`}
@@ -304,7 +309,7 @@ const Sidebar = ({ currentPage }) => {
                   : 'border-transparent text-slate-200 hover:bg-white/5 hover:border-white/10'
               }`}
             >
-              My Issued Items
+              Issued Items
             </Link>
           </>
         )}

@@ -4,6 +4,8 @@ import ConfirmModal from '../ConfirmModal';
 import NotificationModal from '../NotificationModal';
 
 const ManageItems = ({ onUpdate }) => {
+  const itemNameSafe = (value) => value.replace(/[^a-zA-Z0-9\s]/g, '');
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -137,7 +139,7 @@ const ManageItems = ({ onUpdate }) => {
       )}
 
       {showForm && (
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6 text-slate-900">
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6 text-slate-900" style={{ colorScheme: 'light' }}>
           <h3 className="text-xl font-bold mb-4 text-slate-900">{editingItem ? 'Edit Item' : 'Add New Item'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -145,9 +147,9 @@ const ManageItems = ({ onUpdate }) => {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, name: itemNameSafe(e.target.value) })}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
@@ -157,7 +159,7 @@ const ManageItems = ({ onUpdate }) => {
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
@@ -165,7 +167,7 @@ const ManageItems = ({ onUpdate }) => {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows="3"
               />
             </div>
@@ -175,7 +177,7 @@ const ManageItems = ({ onUpdate }) => {
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="AVAILABLE">Available</option>
                   <option value="ISSUED">Issued</option>

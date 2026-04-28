@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CreateLabAdmin = ({ onSuccess }) => {
+  const lettersAndSpacesOnly = (value) => value.replace(/[^a-zA-Z\s]/g, '');
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -76,7 +78,9 @@ const CreateLabAdmin = ({ onSuccess }) => {
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: lettersAndSpacesOnly(e.target.value) })
+              }
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
