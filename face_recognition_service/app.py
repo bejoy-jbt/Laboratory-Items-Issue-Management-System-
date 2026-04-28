@@ -142,8 +142,8 @@ def compare_faces_endpoint():
         distance = np.linalg.norm(encoding1 - encoding2)
         
         # Threshold for face matching (lower is more strict)
-        # Default threshold: 0.65 (more lenient than 0.6 for better real-world performance)
-        threshold = data.get('threshold', 0.65)
+        # Default threshold: 0.60 (closer to face_recognition defaults; reduces false-positives)
+        threshold = data.get('threshold', 0.60)
         is_match = bool(distance < threshold)  # Convert NumPy bool_ to Python bool for JSON serialization
         
         return jsonify({
@@ -194,13 +194,27 @@ def verify_face():
             return jsonify({'error': 'Failed to decode live image'}), 400
         
         rgb_live = cv2.cvtColor(live_image, cv2.COLOR_BGR2RGB)
-        live_encodings = face_encodings(rgb_live, face_locations(rgb_live))
+        live_locations = face_locations(rgb_live)
+        if len(live_locations) == 0:
+            return jsonify({
+                'success': False,
+                'is_match': False,
+                'message': 'No face detected in live image'
+            }), 200
+        if len(live_locations) > 1:
+            return jsonify({
+                'success': False,
+                'is_match': False,
+                'message': 'Multiple faces detected in live image'
+            }), 200
+
+        live_encodings = face_encodings(rgb_live, live_locations)
         
         if len(live_encodings) == 0:
             return jsonify({
                 'success': False,
                 'is_match': False,
-                'message': 'No face detected in live image'
+                'message': 'Failed to generate face encoding from live image'
             }), 200
         
         live_encoding = live_encodings[0]
@@ -230,13 +244,27 @@ def verify_face():
                     return jsonify({'error': 'Failed to decode user image from base64'}), 400
                 
                 rgb_user = cv2.cvtColor(user_image, cv2.COLOR_BGR2RGB)
-                user_encodings = face_encodings(rgb_user, face_locations(rgb_user))
+                user_locations = face_locations(rgb_user)
+                if len(user_locations) == 0:
+                    return jsonify({
+                        'success': False,
+                        'is_match': False,
+                        'message': 'No face detected in user image'
+                    }), 200
+                if len(user_locations) > 1:
+                    return jsonify({
+                        'success': False,
+                        'is_match': False,
+                        'message': 'Multiple faces detected in user image'
+                    }), 200
+
+                user_encodings = face_encodings(rgb_user, user_locations)
                 
                 if len(user_encodings) == 0:
                     return jsonify({
                         'success': False,
                         'is_match': False,
-                        'message': 'No face detected in user image'
+                        'message': 'Failed to generate face encoding from user image'
                     }), 200
                 
                 user_encoding = user_encodings[0]
@@ -247,13 +275,27 @@ def verify_face():
                     return jsonify({'error': 'User image file not found'}), 404
                 
                 user_image = load_image_file(user_image_path)
-                user_encodings = face_encodings(user_image, face_locations(user_image))
+                user_locations = face_locations(user_image)
+                if len(user_locations) == 0:
+                    return jsonify({
+                        'success': False,
+                        'is_match': False,
+                        'message': 'No face detected in user image'
+                    }), 200
+                if len(user_locations) > 1:
+                    return jsonify({
+                        'success': False,
+                        'is_match': False,
+                        'message': 'Multiple faces detected in user image'
+                    }), 200
+
+                user_encodings = face_encodings(user_image, user_locations)
                 
                 if len(user_encodings) == 0:
                     return jsonify({
                         'success': False,
                         'is_match': False,
-                        'message': 'No face detected in user image'
+                        'message': 'Failed to generate face encoding from user image'
                     }), 200
                 
                 user_encoding = user_encodings[0]
@@ -264,7 +306,7 @@ def verify_face():
         
         # Compare faces
         distance = np.linalg.norm(live_encoding - user_encoding)
-        threshold = data.get('threshold', 0.65)  # Default threshold 0.65 (more lenient than 0.6)
+        threshold = data.get('threshold', 0.60)  # Default threshold 0.60 to reduce false positives
         is_match = bool(distance < threshold)  # Convert NumPy bool_ to Python bool for JSON serialization
         confidence = max(0, min(100, (1 - distance) * 100))
         

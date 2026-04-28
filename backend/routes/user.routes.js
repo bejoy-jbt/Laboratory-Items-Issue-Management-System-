@@ -14,6 +14,12 @@ const __dirname = dirname(__filename);
 const router = express.Router();
 const prisma = new PrismaClient();
 
+const getFaceMatchThreshold = () => {
+  const raw = process.env.FACE_MATCH_THRESHOLD;
+  const parsed = raw ? Number(raw) : NaN;
+  return Number.isFinite(parsed) ? parsed : 0.6;
+};
+
 // Helper to get MongoDB connection
 const getMongoConnection = async () => {
   if (mongoose.connection.readyState === 0) {
@@ -166,12 +172,30 @@ router.post('/issue/:itemId', async (req, res) => {
       });
     }
 
-    // Face verification is mandatory - require liveImage for verification
+    const isValidFaceDescriptor = (value) => {
+      if (!value || typeof value !== 'string') return false;
+      const base64Regex = /^[A-Za-z0-9+/=]+$/;
+      if (!base64Regex.test(value)) return false;
+      try {
+        const decoded = Buffer.from(value, 'base64').toString('utf-8');
+        const parsed = JSON.parse(decoded);
+        return Array.isArray(parsed) && parsed.length > 0 && parsed.every((n) => typeof n === 'number');
+      } catch {
+        return false;
+      }
+    };
+
+    // Face verification input (prefer comparing descriptors only)
     const { liveImage } = req.body;
-    
-    if (!liveImage) {
-      return res.status(400).json({ 
-        message: 'Face verification is required. Please complete face verification before issuing items.' 
+    const hasIncomingDescriptor = isValidFaceDescriptor(faceDescriptor);
+    const hasStoredDescriptor = isValidFaceDescriptor(user.faceDescriptor);
+    const shouldCompareDescriptors = hasIncomingDescriptor && hasStoredDescriptor;
+
+    // If frontend didn't provide a descriptor, we need a live image to verify
+    if (!shouldCompareDescriptors && !liveImage) {
+      return res.status(400).json({
+        message:
+          'Face verification is required. Provide either a valid faceDescriptor or a liveImage.'
       });
     }
 
@@ -179,25 +203,21 @@ router.post('/issue/:itemId', async (req, res) => {
     let verificationStatus = 'FAILED'; // Declare outside try block so it's accessible later
     try {
       const faceRecognitionService = await import('../services/faceRecognition.service.js');
-      
-      // Check if user.imageUrl is a base64 string or a file path
-      let userImageUrl = null;
-      if (user.imageUrl) {
-        // If it's a base64 string (starts with "data:image"), pass it directly
-        if (user.imageUrl.startsWith('data:image')) {
-          userImageUrl = user.imageUrl;
-        } else {
-          // Otherwise, it's a file path - resolve it
-          userImageUrl = join(__dirname, '..', user.imageUrl);
-        }
-      }
-      
-      const verificationResult = await faceRecognitionService.verifyFace(
-        liveImage,
-        userImageUrl,
-        user.faceDescriptor || null,
-        0.65 // Slightly more lenient threshold (0.65 instead of 0.6)
-      );
+
+      const threshold = getFaceMatchThreshold();
+      const verificationResult = shouldCompareDescriptors
+        ? await faceRecognitionService.compareFaces(user.faceDescriptor, faceDescriptor, threshold)
+        : await faceRecognitionService.verifyFace(
+            liveImage,
+            // Only use stored image as fallback when we can't compare descriptors
+            user.imageUrl
+              ? user.imageUrl.startsWith('data:image')
+                ? user.imageUrl
+                : join(__dirname, '..', user.imageUrl)
+              : null,
+            user.faceDescriptor || null,
+            threshold
+          );
 
       // Log verification details for debugging
       console.log(`Face verification result for user: ${user.name} (${req.user.id}):`, {
@@ -211,11 +231,11 @@ router.post('/issue/:itemId', async (req, res) => {
       // Check if face verification was successful
       if (!verificationResult.success || !verificationResult.is_match) {
         const distance = verificationResult.distance || 'unknown';
-        const threshold = verificationResult.threshold || 0.65;
+        const threshold = verificationResult.threshold || getFaceMatchThreshold();
         console.log(`Face verification failed - Distance: ${distance}, Threshold: ${threshold}`);
         verificationStatus = 'FAILED';
         return res.status(403).json({ 
-          message: `Face verification failed. You are not authorized to get this item. Only the registered user can issue items. (Distance: ${distance.toFixed(3)}, Threshold: ${threshold})` 
+          message: `Face verification failed. You are not authorized to get this item. Only the registered user can issue items. (Distance: ${Number.isFinite(distance) ? distance.toFixed(3) : distance}, Threshold: ${threshold})` 
         });
       }
 
@@ -320,6 +340,7 @@ router.post('/return/:issueRecordId', async (req, res) => {
   try {
     const { issueRecordId } = req.params;
     const { liveImage } = req.body; // Face verification image required
+    const { faceDescriptor } = req.body; // Optional: prefer descriptor compare when provided
 
     const issueRecord = await prisma.issueRecord.findUnique({
       where: { id: issueRecordId },
@@ -348,10 +369,28 @@ router.post('/return/:issueRecordId', async (req, res) => {
       return res.status(400).json({ message: 'Item has already been returned' });
     }
 
-    // Face verification is REQUIRED for return - verify the user's face matches the original issuer
-    if (!liveImage) {
-      return res.status(400).json({ 
-        message: 'Face verification is required. Please complete face verification before returning items.' 
+    const isValidFaceDescriptor = (value) => {
+      if (!value || typeof value !== 'string') return false;
+      const base64Regex = /^[A-Za-z0-9+/=]+$/;
+      if (!base64Regex.test(value)) return false;
+      try {
+        const decoded = Buffer.from(value, 'base64').toString('utf-8');
+        const parsed = JSON.parse(decoded);
+        return Array.isArray(parsed) && parsed.length > 0 && parsed.every((n) => typeof n === 'number');
+      } catch {
+        return false;
+      }
+    };
+
+    const hasIncomingDescriptor = isValidFaceDescriptor(faceDescriptor);
+    const hasStoredDescriptor = isValidFaceDescriptor(issueRecord.user.faceDescriptor);
+    const shouldCompareDescriptors = hasIncomingDescriptor && hasStoredDescriptor;
+
+    // Face verification is REQUIRED for return - prefer descriptor compare, else require liveImage
+    if (!shouldCompareDescriptors && !liveImage) {
+      return res.status(400).json({
+        message:
+          'Face verification is required. Provide either a valid faceDescriptor or a liveImage.'
       });
     }
 
@@ -360,22 +399,19 @@ router.post('/return/:issueRecordId', async (req, res) => {
     try {
       const faceRecognitionService = await import('../services/faceRecognition.service.js');
       
-      // Get user's registered face image
-      let userImageUrl = null;
-      if (issueRecord.user.imageUrl) {
-        if (issueRecord.user.imageUrl.startsWith('data:image')) {
-          userImageUrl = issueRecord.user.imageUrl;
-        } else {
-          userImageUrl = join(__dirname, '..', issueRecord.user.imageUrl);
-        }
-      }
-      
-      const verificationResult = await faceRecognitionService.verifyFace(
-        liveImage,
-        userImageUrl,
-        issueRecord.user.faceDescriptor || null,
-        0.65
-      );
+      const threshold = getFaceMatchThreshold();
+      const verificationResult = shouldCompareDescriptors
+        ? await faceRecognitionService.compareFaces(issueRecord.user.faceDescriptor, faceDescriptor, threshold)
+        : await faceRecognitionService.verifyFace(
+            liveImage,
+            issueRecord.user.imageUrl
+              ? issueRecord.user.imageUrl.startsWith('data:image')
+                ? issueRecord.user.imageUrl
+                : join(__dirname, '..', issueRecord.user.imageUrl)
+              : null,
+            issueRecord.user.faceDescriptor || null,
+            threshold
+          );
 
       console.log(`Return face verification result for user: ${issueRecord.user.name}:`, {
         success: verificationResult.success,
@@ -388,11 +424,11 @@ router.post('/return/:issueRecordId', async (req, res) => {
       // Check if face verification was successful
       if (!verificationResult.success || !verificationResult.is_match) {
         const distance = verificationResult.distance || 'unknown';
-        const threshold = verificationResult.threshold || 0.65;
+        const threshold = verificationResult.threshold || getFaceMatchThreshold();
         console.log(`Return face verification failed - Distance: ${distance}, Threshold: ${threshold}`);
         verificationStatus = 'FAILED';
         return res.status(403).json({ 
-          message: `Face verification failed. Unauthorized user. Only the user who issued this item can return it. (Distance: ${distance.toFixed(3)}, Threshold: ${threshold})` 
+          message: `Face verification failed. Unauthorized user. Only the user who issued this item can return it. (Distance: ${Number.isFinite(distance) ? distance.toFixed(3) : distance}, Threshold: ${threshold})` 
         });
       }
 

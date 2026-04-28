@@ -64,7 +64,7 @@ export const compareFaces = async (encoding1, encoding2, threshold = 0.6) => {
  * @param {number} threshold - Matching threshold (default: 0.6)
  * @returns {Promise<Object>} - Verification result
  */
-export const verifyFace = async (liveImageBase64, userImageUrl = null, userEncoding = null, threshold = 0.65) => {
+export const verifyFace = async (liveImageBase64, userImageUrl = null, userEncoding = null, threshold = 0.6) => {
   try {
     const payload = {
       live_image: liveImageBase64,
