@@ -7,6 +7,7 @@ import { sendOverdueNotification } from './email.service.js';
 dotenv.config();
 
 const prisma = new PrismaClient();
+let isOverdueCheckRunning = false;
 
 // Helper to get MongoDB connection
 const getMongoConnection = async () => {
@@ -18,6 +19,12 @@ const getMongoConnection = async () => {
 
 // Check for overdue items and send notifications
 export const checkOverdueItems = async () => {
+  if (isOverdueCheckRunning) {
+    console.log('⏭️  Previous overdue check is still running. Skipping this cycle.');
+    return { success: true, skipped: true, reason: 'Previous check still running' };
+  }
+
+  isOverdueCheckRunning = true;
   console.log('\n========================================');
   console.log('🔍 STARTING OVERDUE ITEMS CHECK');
   console.log('========================================\n');
@@ -364,7 +371,31 @@ export const checkOverdueItems = async () => {
         console.log(`   Lab: ${record.lab.name} (ID: ${record.labId})`);
         console.log(`   Estimated Return: ${record.estimatedReturnTime}`);
         
-        // Step 4a: Find lab admin
+        // Step 4a: Atomically claim the record to avoid duplicate emails
+        console.log('\n   🔒 Step 4a: Claiming record for notification...');
+        const db = await getMongoConnection();
+        const issueRecordsCollection = db.collection('issue_records');
+
+        const claimResult = await issueRecordsCollection.updateOne(
+          {
+            _id: new mongoose.Types.ObjectId(record.id),
+            notification_sent: { $ne: true },
+            notification_processing: { $ne: true }
+          },
+          {
+            $set: {
+              notification_processing: true,
+              updated_at: new Date()
+            }
+          }
+        );
+
+        if (claimResult.modifiedCount === 0) {
+          console.log(`   ⏭️  Record ${record.id} already claimed/processed. Skipping.`);
+          continue;
+        }
+
+        // Step 4b: Find lab admin
         console.log('\n   🔍 Step 4a: Finding lab admin...');
         let labAdmin;
         
@@ -410,7 +441,7 @@ export const checkOverdueItems = async () => {
           continue;
         }
 
-        // Step 4b: Send email notification
+        // Step 4c: Send email notification
         console.log('\n   📧 Step 4b: Sending email notifications...');
         const emailSent = await sendOverdueNotification(
           record,
@@ -420,18 +451,18 @@ export const checkOverdueItems = async () => {
         );
 
         if (emailSent) {
-          // Step 4c: Mark notification as sent
+          // Step 4d: Mark notification as sent
           console.log('\n   💾 Step 4c: Marking notification as sent...');
           try {
-            const db = await getMongoConnection();
-            const issueRecordsCollection = db.collection('issue_records');
-            
             const updateResult = await issueRecordsCollection.updateOne(
               { _id: new mongoose.Types.ObjectId(record.id) },
               { 
                 $set: { 
                   notification_sent: true,
                   updated_at: new Date()
+                },
+                $unset: {
+                  notification_processing: ''
                 }
               }
             );
@@ -450,12 +481,40 @@ export const checkOverdueItems = async () => {
           }
         } else {
           console.error(`   ❌ Failed to send notification for record ${record.id}`);
+          await issueRecordsCollection.updateOne(
+            { _id: new mongoose.Types.ObjectId(record.id) },
+            {
+              $unset: {
+                notification_processing: ''
+              },
+              $set: {
+                updated_at: new Date()
+              }
+            }
+          );
           failCount++;
         }
       } catch (recordError) {
         console.error(`❌ ERROR: Failed to process record ${record.id}`);
         console.error('   Error:', recordError.message);
         console.error('   Stack:', recordError.stack);
+        try {
+          const db = await getMongoConnection();
+          const issueRecordsCollection = db.collection('issue_records');
+          await issueRecordsCollection.updateOne(
+            { _id: new mongoose.Types.ObjectId(record.id) },
+            {
+              $unset: {
+                notification_processing: ''
+              },
+              $set: {
+                updated_at: new Date()
+              }
+            }
+          );
+        } catch (unlockError) {
+          console.error(`   ⚠️  Failed to release processing lock for ${record.id}: ${unlockError.message}`);
+        }
         failCount++;
       }
     }
@@ -483,10 +542,12 @@ export const checkOverdueItems = async () => {
     console.error('Error stack:', error.stack);
     console.error('Full error object:', JSON.stringify(error, null, 2));
     return { success: false, error: error.message, stack: error.stack };
+  } finally {
+    isOverdueCheckRunning = false;
   }
 };
 
-// Schedule cron job to run every hour
+// Schedule cron job to run every 5 seconds
 export const startOverdueChecker = () => {
   // Check if email is configured
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
@@ -495,9 +556,9 @@ export const startOverdueChecker = () => {
     return;
   }
 
-  // Run every hour at minute 0
-  cron.schedule('0 * * * *', async () => {
-    console.log('\n⏰ Running scheduled overdue items check...');
+  // Run every 5 seconds
+  cron.schedule('*/5 * * * * *', async () => {
+    console.log('\n⏰ Running scheduled overdue items check (every 5 seconds)...');
     await checkOverdueItems();
   });
 
@@ -507,7 +568,7 @@ export const startOverdueChecker = () => {
   //   await checkOverdueItems();
   // });
 
-  console.log('✅ Overdue items checker scheduled to run every hour');
+  console.log('✅ Overdue items checker scheduled to run every 5 seconds');
 };
 
 // Also run on startup (optional - for immediate check)

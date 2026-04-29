@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import { FaceMesh, FACEMESH_TESSELATION } from '@mediapipe/face_mesh';
+import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
 const FaceScanPython = ({ onFaceDetected, onClose, userId, userName, userImageUrl, userEncoding }) => {
   const [isScanning, setIsScanning] = useState(false);
@@ -8,17 +10,79 @@ const FaceScanPython = ({ onFaceDetected, onClose, userId, userName, userImageUr
   const [faceMatched, setFaceMatched] = useState(false);
   const [faceMismatch, setFaceMismatch] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [modelsLoaded, setModelsLoaded] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const overlayCanvasRef = useRef(null);
   const streamRef = useRef(null);
   const intervalRef = useRef(null);
+  const landmarkIntervalRef = useRef(null);
+  const faceMeshRef = useRef(null);
+  const isLandmarkProcessingRef = useRef(false);
   const capturedImageRef = useRef(null); // Store captured image for backend verification
 
   useEffect(() => {
+    initializeFaceMesh();
     return () => {
       stopCamera();
     };
   }, []);
+
+  useEffect(() => {
+    if (isScanning && modelsLoaded && !landmarkIntervalRef.current) {
+      startLandmarkOverlay();
+    }
+  }, [isScanning, modelsLoaded]);
+
+  const initializeFaceMesh = async () => {
+    try {
+      const faceMesh = new FaceMesh({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+      });
+
+      faceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      faceMesh.onResults((results) => {
+        if (!overlayCanvasRef.current) return;
+        const overlayCanvas = overlayCanvasRef.current;
+        const overlayCtx = overlayCanvas.getContext('2d');
+        const video = videoRef.current;
+        const width = video?.clientWidth || video?.videoWidth || 640;
+        const height = video?.clientHeight || video?.videoHeight || 480;
+
+        overlayCanvas.width = width;
+        overlayCanvas.height = height;
+        overlayCtx.clearRect(0, 0, width, height);
+
+        if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
+          return;
+        }
+
+        results.multiFaceLandmarks.forEach((landmarks) => {
+          drawConnectors(overlayCtx, landmarks, FACEMESH_TESSELATION, {
+            color: '#00FF88',
+            lineWidth: 0.75
+          });
+          drawLandmarks(overlayCtx, landmarks, {
+            color: '#00FF88',
+            radius: 1.4
+          });
+        });
+      });
+
+      faceMeshRef.current = faceMesh;
+      setModelsLoaded(true);
+    } catch (modelError) {
+      console.error('Failed to load face landmark models:', modelError);
+      setModelsLoaded(false);
+      setError('Failed to initialize realtime face landmarks.');
+    }
+  };
 
   const startCamera = async () => {
     try {
@@ -35,6 +99,11 @@ const FaceScanPython = ({ onFaceDetected, onClose, userId, userName, userImageUr
       setMessage('Camera started. Please position your face in the frame.');
       setError('');
       setFaceMismatch(false);
+      if (modelsLoaded) {
+        startLandmarkOverlay();
+      } else {
+        setMessage('Camera started. Loading landmark points...');
+      }
     } catch (err) {
       console.error('Error accessing camera:', err);
       setError('Failed to access camera. Please ensure camera permissions are granted.');
@@ -50,7 +119,33 @@ const FaceScanPython = ({ onFaceDetected, onClose, userId, userName, userImageUr
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    if (landmarkIntervalRef.current) {
+      clearInterval(landmarkIntervalRef.current);
+      landmarkIntervalRef.current = null;
+    }
+    if (overlayCanvasRef.current) {
+      const overlayCtx = overlayCanvasRef.current.getContext('2d');
+      overlayCtx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
+    }
     setIsScanning(false);
+  };
+
+  const startLandmarkOverlay = () => {
+    if (!videoRef.current || !overlayCanvasRef.current || !faceMeshRef.current) return;
+
+    const video = videoRef.current;
+
+    landmarkIntervalRef.current = setInterval(async () => {
+      if (!video || video.readyState < 2 || isLandmarkProcessingRef.current) return;
+      isLandmarkProcessingRef.current = true;
+      try {
+        await faceMeshRef.current.send({ image: video });
+      } catch (landmarkError) {
+        console.error('Landmark draw error:', landmarkError);
+      } finally {
+        isLandmarkProcessingRef.current = false;
+      }
+    }, 120);
   };
 
   const captureFrame = () => {
@@ -360,6 +455,11 @@ const FaceScanPython = ({ onFaceDetected, onClose, userId, userName, userImageUr
             <canvas
               ref={canvasRef}
               className="hidden"
+            />
+            <canvas
+              ref={overlayCanvasRef}
+              className="absolute top-0 left-0 h-full w-full rounded-lg pointer-events-none"
+              style={{ display: isScanning ? 'block' : 'none' }}
             />
           </div>
           {!isScanning && (

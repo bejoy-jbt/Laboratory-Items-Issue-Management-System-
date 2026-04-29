@@ -7,6 +7,7 @@ const FaceScan = ({ onFaceDetected, onClose, userId, userImageUrl }) => {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [faceMatched, setFaceMatched] = useState(false);
+  const [liveDescriptor, setLiveDescriptor] = useState([]);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
@@ -72,6 +73,7 @@ const FaceScan = ({ onFaceDetected, onClose, userId, userImageUrl }) => {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
+    setLiveDescriptor([]);
     setIsScanning(false);
   };
 
@@ -104,6 +106,7 @@ const FaceScan = ({ onFaceDetected, onClose, userId, userImageUrl }) => {
 
       if (detections.length > 0) {
         const descriptor = detections[0].descriptor;
+        setLiveDescriptor(Array.from(descriptor));
         
         // If we have a user image to compare with
         if (userId && userImageUrl) {
@@ -129,6 +132,7 @@ const FaceScan = ({ onFaceDetected, onClose, userId, userImageUrl }) => {
           }
         }
       } else {
+        setLiveDescriptor([]);
         setMessage('No face detected. Please position your face in the frame.');
       }
     }, 100);
@@ -245,6 +249,17 @@ const FaceScan = ({ onFaceDetected, onClose, userId, userImageUrl }) => {
             </div>
           )}
         </div>
+
+        {isScanning && liveDescriptor.length > 0 && (
+          <div className="mb-4 rounded-lg border border-gray-300 bg-gray-50 p-3">
+            <p className="mb-2 text-sm font-semibold text-gray-800">
+              Realtime 128-d Descriptor Vector
+            </p>
+            <div className="max-h-32 overflow-y-auto rounded bg-white p-2 font-mono text-xs text-gray-700">
+              [{liveDescriptor.map((value) => value.toFixed(5)).join(', ')}]
+            </div>
+          </div>
+        )}
 
         <div className="flex gap-4">
           {!isScanning && !faceMatched && (
