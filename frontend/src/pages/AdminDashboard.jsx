@@ -16,6 +16,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalLabs: 0
   });
+  const [assignedLabs, setAssignedLabs] = useState([]);
 
   useEffect(() => {
     fetchStats();
@@ -24,9 +25,11 @@ const AdminDashboard = () => {
   const fetchStats = async () => {
     try {
       const response = await axios.get('/api/admin/labs');
+      const labs = response.data.labs || [];
       setStats({
-        totalLabs: response.data.labs.length
+        totalLabs: labs.length
       });
+      setAssignedLabs(labs);
     } catch (error) {
       console.error('Failed to fetch stats:', error);
     }
@@ -50,6 +53,28 @@ const AdminDashboard = () => {
                     color="blue"
                   />
                 </div>
+                <section className="mt-2">
+                  <h2 className="text-xl font-bold tracking-tight mb-4 text-slate-100">
+                    Labs assigned to you
+                  </h2>
+                  {assignedLabs.length === 0 ? (
+                    <p className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md px-6 py-6 text-slate-300 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+                      You are not assigned to any lab yet. A super admin can assign labs to you from the super admin dashboard.
+                    </p>
+                  ) : (
+                    <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {assignedLabs.map((lab) => (
+                        <li
+                          key={lab.id}
+                          className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
+                        >
+                          <p className="text-lg font-bold tracking-tight text-slate-100">{lab.name}</p>
+                          <p className="mt-2 text-sm font-semibold text-slate-300">{lab.department}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
               </div>
             }
           />
